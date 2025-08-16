@@ -266,7 +266,16 @@ function rcp_enqueue_frontend_assets() {
             'referral-code-style',
             plugins_url( 'referral-code-style.css', __FILE__ ),
             array(),
-            '1.0.0'
+            '1.0.1' // Version bump
+        );
+
+        // Enqueue the main script for the frontend
+        wp_enqueue_script(
+            'rcp-frontend-script',
+            plugins_url( 'js/editor.js', __FILE__ ),
+            array(),
+            filemtime( plugin_dir_path( __FILE__ ) . 'js/editor.js' ),
+            true // Load in footer
         );
     }
 }
@@ -281,13 +290,27 @@ add_action( 'wp_enqueue_scripts', 'rcp_enqueue_frontend_assets' );
  * @param string $media  The stylesheet's media type.
  * @return string The modified <link> tag.
  */
-function rcp_defer_css( $tag, $handle, $href, $media ) {
+/**
+ * Defer non-critical CSS and JS to prevent render-blocking.
+ */
+function rcp_defer_assets( $tag, $handle, $href ) {
+    // Defer CSS
     if ( 'referral-code-style' === $handle ) {
-        $tag = '<link rel="stylesheet" id="' . esc_attr( $handle ) . '-css" href="' . esc_url( $href ) . '" media="print" onload="this.media=\'all\'" /><noscript><link rel="stylesheet" href="' . esc_url( $href ) . '"></noscript>';
+        return '<link rel="preload" href="' . esc_url( $href ) . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">' .
+               '<noscript><link rel="stylesheet" href="' . esc_url( $href ) . '"></noscript>';
     }
     return $tag;
 }
-add_filter( 'style_loader_tag', 'rcp_defer_css', 10, 4 );
+add_filter( 'style_loader_tag', 'rcp_defer_assets', 10, 3 );
+
+function rcp_defer_js( $tag, $handle ) {
+    // Defer JavaScript
+    if ( 'rcp-frontend-script' === $handle ) {
+        return str_replace( ' src', ' defer src', $tag );
+    }
+    return $tag;
+}
+add_filter( 'script_loader_tag', 'rcp_defer_js', 10, 2 );
 
 /**
  * Get cached comments for a post to improve performance.

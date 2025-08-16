@@ -48,8 +48,8 @@
 }
 
 .breadcrumb a {
-    color: var(--text-secondary);
-    text-decoration: none;
+    color: #475569; /* Darker for better contrast */
+    text-decoration: underline; /* Ensure links are distinguishable */
     transition: color 0.2s ease;
 }
 
@@ -98,12 +98,13 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--g-color), var(--secondary-color));
+    background: var(--g-color);
 }
 
 .referral-logo {
     width: 80px;
     height: 80px;
+    aspect-ratio: 1 / 1; /* Prevent layout shift */
     border-radius: var(--radius-md);
     object-fit: cover;
     border: 2px solid var(--border-color);
@@ -120,12 +121,8 @@
     margin: 0 0 12px 0;
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--text-primary);
+    color: var(--g-color);
     line-height: 1.2;
-    background: var(--g-color);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
 }
 
 .referral-category {
@@ -175,28 +172,6 @@
     font-size: 0.9rem;
 }
 
-
-
-.highlight-item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.highlight-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-weight: 600;
-}
-
-.highlight-value {
-    font-size: 0.9rem;
-    color: var(--text-primary);
-    font-weight: 700;
-}
-
 /* Action buttons section - mobile optimized */
 .referral-actions {
     display: flex;
@@ -208,7 +183,7 @@
 
 .primary-action-btn {
     background:  var(--g-color);
-    color: white;
+    color: #ffffff;
     border: none;
     padding: 12px 24px;
     border-radius: var(--radius-lg);
@@ -245,16 +220,6 @@
     overflow: hidden;
 }
 
-.referral-code-display::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, var(--primary-light) 0%, transparent 50%);
-    opacity: 0.3;
-}
 
 .copy-btn {
     background: var(--g-color);
@@ -377,7 +342,7 @@
     left: 0;
     width: 40px;
     height: 2px;
-    background: linear-gradient(90deg, var(--g-color), var(--secondary-color));
+    background: var(--g-color);
     border-radius: 2px;
 }
 
@@ -393,7 +358,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--g-color), var(--secondary-color));
+    background: var(--g-color);
 }
 
 .referral-details-table {
@@ -413,7 +378,7 @@
 .referral-details-table th {
     background: rgba(99, 102, 241, 0.1);
     font-weight: 600;
-    color: var(--g-color);
+    color: var(--text-primary); /* Improved contrast */
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -438,7 +403,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--g-color), var(--secondary-color));
+    background: var(--g-color);
 }
 
 .referral-submit-section h3 {
@@ -583,7 +548,7 @@
 
 .user-code-item.official-code {
     border: 2px solid var(--g-color);
-    background: linear-gradient(135deg, var(--primary-light), var(--card-background));
+    background: var(--primary-light);
 }
 
 .code-header {
@@ -624,11 +589,6 @@
     font-size: 0.8rem;
 }
 
-.link-description {
-    font-size: 0.7rem;
-    opacity: 0.8;
-}
-
 .comment-text {
     margin: 10px 0 0 0;
     font-size: 0.8rem;
@@ -639,7 +599,7 @@
 /* FAQ Section */
 .faq-section {
     border: 1px solid var(--g-color);
-    background: linear-gradient(135deg, var(--primary-light) 0%, var(--card-background) 100%);
+    background: var(--primary-light);
 }
 
 .faq-list {
@@ -713,6 +673,19 @@
     color: var(--text-primary);
     font-size: 1.1rem;
     font-weight: 600;
+}
+
+/* Accessibility: Improve contrast for sidebar links and text */
+.sidebar p, .sidebar li, .sidebar a, .sidebar strong {
+    color: #334155; /* Darker text for better contrast */
+}
+
+.sidebar a {
+    text-decoration: underline;
+}
+
+.sidebar a:hover {
+    color: var(--primary-hover);
 }
 
 .stats-grid {
