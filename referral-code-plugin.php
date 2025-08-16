@@ -190,4 +190,74 @@ function rcp_load_single_template( $template ) {
     return $template;
 }
 add_filter( 'single_template', 'rcp_load_single_template' );
+
+/**
+ * Enqueue frontend scripts and styles.
+ */
+function rcp_enqueue_frontend_assets() {
+    if ( is_singular( 'referral-codes' ) ) {
+        wp_enqueue_style(
+            'referral-code-style',
+            plugins_url( 'referral-code-style.css', __FILE__ ),
+            array(),
+            '1.0.0'
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'rcp_enqueue_frontend_assets' );
+
+/**
+ * Defer non-critical CSS to prevent render-blocking.
+ *
+ * @param string $tag    The <link> tag for the enqueued style.
+ * @param string $handle The style's handle.
+ * @param string $href   The stylesheet's URL.
+ * @param string $media  The stylesheet's media type.
+ * @return string The modified <link> tag.
+ */
+function rcp_defer_css( $tag, $handle, $href, $media ) {
+    if ( 'referral-code-style' === $handle ) {
+        $tag = '<link rel="stylesheet" id="' . esc_attr( $handle ) . '-css" href="' . esc_url( $href ) . '" media="print" onload="this.media=\'all\'" /><noscript><link rel="stylesheet" href="' . esc_url( $href ) . '"></noscript>';
+    }
+    return $tag;
+}
+add_filter( 'style_loader_tag', 'rcp_defer_css', 10, 4 );
+
+/**
+ * Get cached comments for a post to improve performance.
+ *
+ * @param int $post_id The ID of the post.
+ * @return array The array of comment objects.
+ */
+function rcp_get_cached_comments( $post_id ) {
+    $comments = get_transient( 'rcp_comments_' . $post_id );
+
+    if ( false === $comments ) {
+        $comments = get_comments( array(
+            'post_id' => $post_id,
+            'status'  => 'approve',
+            'number'  => 10,
+            'order'   => 'DESC',
+        ) );
+        // Cache the comments for 1 hour.
+        set_transient( 'rcp_comments_' . $post_id, $comments, HOUR_IN_SECONDS );
+    }
+
+    return $comments;
+}
+
+/**
+ * Clear the comments cache when a new comment is posted or a comment's status changes.
+ *
+ * @param int $comment_id The ID of the comment.
+ */
+function rcp_clear_comments_cache( $comment_id ) {
+    $comment = get_comment( $comment_id );
+    if ( $comment && 'referral-codes' === get_post_type( $comment->comment_post_ID ) ) {
+        delete_transient( 'rcp_comments_' . $comment->comment_post_ID );
+    }
+}
+add_action( 'comment_post', 'rcp_clear_comments_cache' );
+add_action( 'edit_comment', 'rcp_clear_comments_cache' );
+add_action( 'wp_set_comment_status', 'rcp_clear_comments_cache' );
 ?>

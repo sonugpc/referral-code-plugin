@@ -6,9 +6,6 @@
 
 get_header(); 
 
-// Enqueue the custom stylesheet
-wp_enqueue_style('referral-code-style', plugins_url( '../referral-code-style.css', __FILE__ ), array(), '1.0.0');
-
 // Get meta fields and current year
 $referral_code = get_post_meta( $post->ID, 'referral_code', true );
 $referral_link = get_post_meta( $post->ID, 'referral_link', true );
@@ -38,7 +35,7 @@ $current_year = date('Y');
         <div class="referral-hero-content">
             <div class="referral-hero-card">
                 <?php if ($app_logo): ?>
-                    <img src="<?php echo esc_url($app_logo); ?>" alt="<?php the_title(); ?>" class="referral-logo">
+                    <img src="<?php echo esc_url($app_logo); ?>" alt="<?php the_title(); ?>" class="referral-logo" width="150" height="150">
                 <?php endif; ?>
                 
                 <div class="referral-info">
@@ -208,12 +205,7 @@ $current_year = date('Y');
                 <div id="user-codes" class="tab-content active">
                     <div class="user-codes-list">
                         <?php
-                        $comments = get_comments(array(
-                            'post_id' => get_the_ID(),
-                            'status' => 'approve',
-                            'number' => 10,
-                            'order' => 'DESC'
-                        ));
+                        $comments = rcp_get_cached_comments(get_the_ID());
                         
                         if ($comments): ?>
                             <?php foreach ($comments as $comment): ?>
@@ -431,7 +423,7 @@ function register_referral_sidebar() {
 add_action('widgets_init', 'register_referral_sidebar');
 ?>
 
-<script>
+<script defer>
 // Optimized JavaScript for better performance
 (function() {
     'use strict';
