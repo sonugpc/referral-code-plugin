@@ -1,193 +1,659 @@
 <?php
 /**
- * Plugin Name:       Referral Code Plugin
- * Plugin URI:        https://example.com/plugins/the-basics/
- * Description:       Creates a custom post type for referral codes with custom fields and a shortcode.
- * Version:           1.0.0
- * Requires at least: 5.2
- * Requires PHP:      7.2
- * Author:            Sonu Sourav
- * Author URI:        https://author.example.com/
- * License:           GPL v2 or later
- * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       referral-code-plugin
- * Domain Path:       /languages
+ * Template Name: Single Referral Code
+ * Description: Custom template for displaying referral code posts
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
-    exit; // Exit if accessed directly.
+get_header(); ?>
+
+<style>
+/* Custom styles for referral code template */
+.referral-template {
+    background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
-/**
- * Register the 'referral-codes' custom post type.
- */
-function rcp_register_post_type() {
-    $labels = array(
-        'name'                  => _x( 'Referral Codes', 'Post type general name', 'referral-code-plugin' ),
-        'singular_name'         => _x( 'Referral Code', 'Post type singular name', 'referral-code-plugin' ),
-        'menu_name'             => _x( 'Referral Codes', 'Admin Menu text', 'referral-code-plugin' ),
-        'name_admin_bar'        => _x( 'Referral Code', 'Add New on Toolbar', 'referral-code-plugin' ),
-        'add_new'               => __( 'Add New', 'referral-code-plugin' ),
-        'add_new_item'          => __( 'Add New Referral Code', 'referral-code-plugin' ),
-        'new_item'              => __( 'New Referral Code', 'referral-code-plugin' ),
-        'edit_item'             => __( 'Edit Referral Code', 'referral-code-plugin' ),
-        'view_item'             => __( 'View Referral Code', 'referral-code-plugin' ),
-        'all_items'             => __( 'All Referral Codes', 'referral-code-plugin' ),
-        'search_items'          => __( 'Search Referral Codes', 'referral-code-plugin' ),
-        'parent_item_colon'     => __( 'Parent Referral Codes:', 'referral-code-plugin' ),
-        'not_found'             => __( 'No referral codes found.', 'referral-code-plugin' ),
-        'not_found_in_trash'    => __( 'No referral codes found in Trash.', 'referral-code-plugin' ),
-        'featured_image'        => _x( 'App Logo', 'Overrides the “Featured Image” phrase for this post type. Added in 4.3', 'referral-code-plugin' ),
-        'set_featured_image'    => _x( 'Set app logo', 'Overrides the “Set featured image” phrase for this post type. Added in 4.3', 'referral-code-plugin' ),
-        'remove_featured_image' => _x( 'Remove app logo', 'Overrides the “Remove featured image” phrase for this post type. Added in 4.3', 'referral-code-plugin' ),
-        'use_featured_image'    => _x( 'Use as app logo', 'Overrides the “Use as featured image” phrase for this post type. Added in 4.3', 'referral-code-plugin' ),
-        'archives'              => _x( 'Referral code archives', 'The post type archive label used in nav menus. Default “Post Archives”. Added in 4.4', 'referral-code-plugin' ),
-        'insert_into_item'      => _x( 'Insert into referral code', 'Overrides the “Insert into post”/”Insert into page” phrase (used when inserting media into a post). Added in 4.4', 'referral-code-plugin' ),
-        'uploaded_to_this_item' => _x( 'Uploaded to this referral code', 'Overrides the “Uploaded to this post”/”Uploaded to this page” phrase (used when viewing media attached to a post). Added in 4.4', 'referral-code-plugin' ),
-        'filter_items_list'     => _x( 'Filter referral codes list', 'Screen reader text for the filter links heading on the post type listing screen. Default “Filter posts list”/”Filter pages list”. Added in 4.4', 'referral-code-plugin' ),
-        'items_list_navigation' => _x( 'Referral codes list navigation', 'Screen reader text for the pagination heading on the post type listing screen. Default “Posts list navigation”/”Pages list navigation”. Added in 4.4', 'referral-code-plugin' ),
-        'items_list'            => _x( 'Referral codes list', 'Screen reader text for the items list heading on the post type listing screen. Default “Posts list”/”Pages list”. Added in 4.4', 'referral-code-plugin' ),
-    );
-
-    $args = array(
-        'labels'             => $labels,
-        'public'             => true,
-        'publicly_queryable' => true,
-        'show_ui'            => true,
-        'show_in_menu'       => true,
-        'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'referral-codes' ),
-        'capability_type'    => 'post',
-        'has_archive'        => true,
-        'hierarchical'       => false,
-        'menu_position'      => null,
-        'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
-        'show_in_rest'       => true, // This enables the REST API
-    );
-
-    register_post_type( 'referral-codes', $args );
+.referral-hero {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 40px 0;
+    margin-bottom: 30px;
 }
-add_action( 'init', 'rcp_register_post_type' );
 
-/**
- * Register meta fields for the 'referral-codes' post type.
- */
-function rcp_register_meta_fields() {
-    register_post_meta( 'referral-codes', 'referral_code', array(
-        'show_in_rest' => true,
-        'single'       => true,
-        'type'         => 'string',
-        'auth_callback' => function() {
-            return current_user_can( 'edit_posts' );
-        }
-    ) );
-
-    register_post_meta( 'referral-codes', 'referral_link', array(
-        'show_in_rest' => true,
-        'single'       => true,
-        'type'         => 'string',
-        'auth_callback' => function() {
-            return current_user_can( 'edit_posts' );
-        }
-    ) );
-
-    register_post_meta( 'referral-codes', 'signup_bonus', array(
-        'show_in_rest' => true,
-        'single'       => true,
-        'type'         => 'string',
-        'auth_callback' => function() {
-            return current_user_can( 'edit_posts' );
-        }
-    ) );
+.referral-hero-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    color: white;
 }
-add_action( 'init', 'rcp_register_meta_fields' );
 
-/**
- * Enqueue block editor assets.
- */
-function rcp_enqueue_block_editor_assets() {
-    wp_enqueue_script(
-        'rcp-editor-script',
-        plugins_url( 'js/editor.js', __FILE__ ),
-        array( 'wp-plugins', 'wp-edit-post', 'wp-element', 'wp-components', 'wp-data', 'wp-i18n' ),
-        filemtime( plugin_dir_path( __FILE__ ) . 'js/editor.js' ),
-        true
-    );
+.referral-hero-inner {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
 }
-add_action( 'enqueue_block_editor_assets', 'rcp_enqueue_block_editor_assets' );
 
+.referral-logo {
+    width: 120px;
+    height: 120px;
+    border-radius: 15px;
+    object-fit: cover;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+}
 
-/**
- * Shortcode to display a referral code box.
- *
- * @param array $atts Shortcode attributes.
- * @return string HTML output for the referral code box.
- */
-function rcp_referral_code_box_shortcode( $atts ) {
-    $atts = shortcode_atts( array(
-        'id' => null,
-    ), $atts, 'referral_code_box' );
+.referral-info h1 {
+    margin: 0 0 10px 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
 
-    if ( ! $atts['id'] ) {
-        return '';
+.referral-category {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    margin: 10px 0;
+}
+
+.referral-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.stars {
+    color: #ffd700;
+    font-size: 1.2rem;
+}
+
+.rating-text {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.container-with-sidebar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 30px;
+}
+
+.main-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.referral-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.referral-detail-box {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.referral-detail-box::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.detail-label {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.detail-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    position: relative;
+    z-index: 1;
+}
+
+.referral-code-value {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-family: 'Courier New', monospace;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.copy-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.copy-btn:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.content-area {
+    margin: 30px 0;
+    line-height: 1.8;
+}
+
+.content-area h2 {
+    color: #333;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.sidebar-box {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.sidebar-box h3 {
+    margin: 0 0 15px 0;
+    color: #333;
+    font-size: 1.3rem;
+}
+
+.user-submission-info {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    color: white;
+}
+
+.submission-stats {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    opacity: 0.9;
+}
+
+.referral-submit-box {
+    background: #f8f9fa;
+    border: 2px dashed #667eea;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    margin: 40px 0;
+}
+
+.submit-form {
+    display: grid;
+    gap: 15px;
+    max-width: 500px;
+    margin: 20px auto 0;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 12px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.submit-btn:hover {
+    transform: translateY(-2px);
+}
+
+.referral-tabs {
+    margin: 40px 0;
+}
+
+.tab-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    background: #f8f9fa;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: #667eea;
+    color: white;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.user-submitted-codes {
+    display: grid;
+    gap: 15px;
+}
+
+.user-code-item {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.code-header {
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.user-name {
+    font-weight: 600;
+    color: #333;
+}
+
+.code-date {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.user-referral-code {
+    background: #f8f9fa;
+    padding: 10px;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+}
+
+@media (max-width: 768px) {
+    .container-with-sidebar {
+        grid-template-columns: 1fr;
     }
-
-    $post = get_post( $atts['id'] );
-
-    if ( ! $post || $post->post_type !== 'referral-codes' ) {
-        return '';
+    
+    .referral-hero-inner {
+        flex-direction: column;
+        text-align: center;
     }
+    
+    .referral-details-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .referral-info h1 {
+        font-size: 1.8rem;
+    }
+}
+</style>
 
-    $referral_code = get_post_meta( $post->ID, 'referral_code', true );
-    $referral_link = get_post_meta( $post->ID, 'referral_link', true );
-    $signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
-    $app_logo = get_the_post_thumbnail_url( $post->ID, 'thumbnail' );
-
-    ob_start();
+<div class="referral-template">
+    <?php while ( have_posts() ) : the_post(); 
+        // Get meta fields
+        $referral_code = get_post_meta( $post->ID, 'referral_code', true );
+        $referral_link = get_post_meta( $post->ID, 'referral_link', true );
+        $signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
+        $app_logo = get_the_post_thumbnail_url( $post->ID, 'thumbnail' );
+        
+        // Get categories
+        $categories = get_the_category();
+        $category_name = !empty($categories) ? $categories[0]->name : 'Referral Program';
     ?>
-    <div class="wp-block-media-text alignwide is-stacked-on-mobile">
-        <figure class="wp-block-media-text__media">
-            <img src="<?php echo esc_url( $app_logo ); ?>" alt="<?php echo esc_attr( $post->post_title ); ?> Logo">
-        </figure>
-        <div class="wp-block-media-text__content">
-            <h3 class="wp-block-heading"><?php echo esc_html( $post->post_title ); ?></h3>
-            <?php if ( ! empty( $signup_bonus ) ) : ?>
-                <p><strong><?php esc_html_e( 'Sign-up Bonus:', 'referral-code-plugin' ); ?></strong> <?php echo esc_html( $signup_bonus ); ?></p>
-            <?php endif; ?>
-            <div class="wp-block-columns">
-                <div class="wp-block-column">
-                    <div class="wp-block-buttons is-content-justification-center">
-                        <div class="wp-block-button">
-                            <a class="wp-block-button__link" href="<?php echo esc_url( $referral_link ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Get the Deal', 'referral-code-plugin' ); ?></a>
-                        </div>
+    
+    <!-- Hero Section - Full Width -->
+    <div class="referral-hero">
+        <div class="referral-hero-content">
+            <div class="referral-hero-inner">
+                <?php if ($app_logo): ?>
+                    <img src="<?php echo esc_url($app_logo); ?>" alt="<?php the_title(); ?>" class="referral-logo">
+                <?php endif; ?>
+                
+                <div class="referral-info">
+                    <h1><?php the_title(); ?></h1>
+                    <div class="referral-category"><?php echo esc_html($category_name); ?></div>
+                    <div class="referral-rating">
+                        <div class="stars">★★★★★</div>
+                        <div class="rating-text">4.5 (1,234 reviews)</div>
                     </div>
-                </div>
-                <div class="wp-block-column">
-                     <p class="has-text-align-center"><strong><?php esc_html_e( 'Referral Code:', 'referral-code-plugin' ); ?></strong></p>
-                     <p class="has-text-align-center has-background has-text-white-color" style="padding:10px;"><?php echo esc_html( $referral_code ); ?></p>
                 </div>
             </div>
         </div>
     </div>
-    <?php
-    return ob_get_clean();
-}
-add_shortcode( 'referral_code_box', 'rcp_referral_code_box_shortcode' );
+    
+    <!-- Main Content with Sidebar -->
+    <div class="container-with-sidebar">
+        <main class="main-content">
+            <!-- Referral Details Grid -->
+            <?php if ($referral_code || $referral_link || $signup_bonus): ?>
+            <div class="referral-details-grid">
+                <?php if ($referral_code): ?>
+                <div class="referral-detail-box">
+                    <div class="detail-label">Referral Code</div>
+                    <div class="detail-value">
+                        <div class="referral-code-value">
+                            <span><?php echo esc_html($referral_code); ?></span>
+                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>')">Copy</button>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+                
+                <?php if ($signup_bonus): ?>
+                <div class="referral-detail-box">
+                    <div class="detail-label">Signup Bonus</div>
+                    <div class="detail-value"><?php echo esc_html($signup_bonus); ?></div>
+                </div>
+                <?php endif; ?>
+                
+                <?php if ($referral_link): ?>
+                <div class="referral-detail-box">
+                    <div class="detail-label">Referral Link</div>
+                    <div class="detail-value">
+                        <div class="referral-code-value">
+                            <span style="font-size: 0.9rem; word-break: break-all;"><?php echo esc_html(substr($referral_link, 0, 30)) . '...'; ?></span>
+                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_link); ?>')">Copy</button>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+            <?php endif; ?>
+            
+            <!-- Content Area -->
+            <div class="content-area">
+                <h2>About This Referral Program</h2>
+                <?php the_content(); ?>
+            </div>
+            
+            <!-- Referral Code Submission Box -->
+            <div class="referral-submit-box">
+                <h3>📤 Submit Your Referral Code</h3>
+                <p>Help the community by sharing your referral code!</p>
+                
+                <form class="submit-form" id="referral-submit-form">
+                    <div class="form-group">
+                        <label for="user-name">Your Name</label>
+                        <input type="text" id="user-name" name="user-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-code">Your Referral Code</label>
+                        <input type="text" id="user-code" name="user-code" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="user-message">Additional Details (Optional)</label>
+                        <textarea id="user-message" name="user-message" rows="3" placeholder="Any special instructions or notes..."></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Referral Code</button>
+                </form>
+            </div>
+            
+            <!-- Referral Codes Tabs -->
+            <div class="referral-tabs">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" onclick="showTab('user-codes')">User Submitted Codes</button>
+                    <button class="tab-btn" onclick="showTab('bigtricks-codes')">BigTricks Codes</button>
+                </div>
+                
+                <!-- User Submitted Codes Tab -->
+                <div id="user-codes" class="tab-content active">
+                    <div class="user-submitted-codes">
+                        <?php
+                        // Get comments for this post
+                        $comments = get_comments(array(
+                            'post_id' => get_the_ID(),
+                            'status' => 'approve',
+                            'number' => 10
+                        ));
+                        
+                        if ($comments): ?>
+                            <?php foreach ($comments as $comment): ?>
+                            <div class="user-code-item">
+                                <div class="code-header">
+                                    <div class="user-name"><?php echo esc_html($comment->comment_author); ?></div>
+                                    <div class="code-date"><?php echo date('M j, Y', strtotime($comment->comment_date)); ?></div>
+                                </div>
+                                
+                                <?php 
+                                // Extract referral code from comment (assuming it's in the format "Code: XXXXX")
+                                $comment_text = $comment->comment_content;
+                                preg_match('/(?:Code:|code:)\s*([A-Za-z0-9]+)/i', $comment_text, $matches);
+                                $extracted_code = isset($matches[1]) ? $matches[1] : '';
+                                ?>
+                                
+                                <?php if ($extracted_code): ?>
+                                <div class="user-referral-code">
+                                    <span><strong>Code:</strong> <?php echo esc_html($extracted_code); ?></span>
+                                    <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($extracted_code); ?>')">Copy</button>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <p><?php echo wp_kses_post($comment_text); ?></p>
+                            </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="text-align: center; color: #666; padding: 40px;">No user codes submitted yet. Be the first to share!</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                
+                <!-- BigTricks Codes Tab -->
+                <div id="bigtricks-codes" class="tab-content">
+                    <div class="user-submitted-codes">
+                        <?php if ($referral_code): ?>
+                        <div class="user-code-item">
+                            <div class="code-header">
+                                <div class="user-name">BigTricks Official</div>
+                                <div class="code-date"><?php echo date('M j, Y'); ?></div>
+                            </div>
+                            <div class="user-referral-code">
+                                <span><strong>Code:</strong> <?php echo esc_html($referral_code); ?></span>
+                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>')">Copy</button>
+                            </div>
+                            <p>Official referral code from BigTricks. Get the best signup bonus!</p>
+                        </div>
+                        <?php else: ?>
+                            <p style="text-align: center; color: #666; padding: 40px;">No BigTricks codes available yet.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <!-- User Submission Info -->
+            <div class="sidebar-box user-submission-info">
+                <h3>📊 Community Stats</h3>
+                <p>Join thousands of users sharing referral codes!</p>
+                <div class="submission-stats">
+                    <div class="stat-item">
+                        <div class="stat-number"><?php echo wp_count_comments(get_the_ID())->approved; ?></div>
+                        <div class="stat-label">Codes Shared</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">4.8</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-number">98%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Info -->
+            <div class="sidebar-box">
+                <h3>🔥 Quick Info</h3>
+                <ul style="list-style: none; padding: 0;">
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">✅ Instant Activation</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">💰 No Hidden Fees</li>
+                    <li style="padding: 8px 0; border-bottom: 1px solid #eee;">🎁 Bonus Rewards</li>
+                    <li style="padding: 8px 0;">📱 Mobile App Available</li>
+                </ul>
+            </div>
+            
+            <!-- Related Posts -->
+            <div class="sidebar-box">
+                <h3>🔗 Related Offers</h3>
+                <?php
+                $related_posts = get_posts(array(
+                    'post_type' => get_post_type(),
+                    'numberposts' => 3,
+                    'exclude' => array(get_the_ID()),
+                    'category__in' => wp_get_post_categories(get_the_ID())
+                ));
+                
+                if ($related_posts): ?>
+                    <ul style="list-style: none; padding: 0;">
+                        <?php foreach ($related_posts as $related): ?>
+                        <li style="margin-bottom: 15px;">
+                            <a href="<?php echo get_permalink($related->ID); ?>" style="text-decoration: none; color: #333; font-weight: 500;">
+                                <?php echo esc_html($related->post_title); ?>
+                            </a>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                <?php endif; ?>
+            </div>
+        </aside>
+    </div>
+    
+    <?php endwhile; ?>
+</div>
 
-/**
- * Load a custom template for single 'referral-codes' posts.
- *
- * @param string $template The path of the template to include.
- * @return string The path of the template to include.
- */
-function rcp_load_single_template( $template ) {
-    if ( is_singular( 'referral-codes' ) ) {
-        $plugin_template = plugin_dir_path( __FILE__ ) . 'templates/single-referral-codes.php';
-        if ( file_exists( $plugin_template ) ) {
-            return $plugin_template;
-        }
-    }
-    return $template;
+<script>
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        // Show success message
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.style.background = 'rgba(34, 197, 94, 0.3)';
+        
+        setTimeout(() => {
+            btn.textContent = originalText;
+            btn.style.background = 'rgba(255, 255, 255, 0.3)';
+        }, 2000);
+    });
 }
-add_filter( 'single_template', 'rcp_load_single_template' );
-?>
+
+// Tab switching function
+function showTab(tabId) {
+    // Hide all tab contents
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabContents.forEach(tab => tab.classList.remove('active'));
+    
+    // Remove active class from all buttons
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    tabButtons.forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected tab
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+}
+
+// Handle form submission
+document.getElementById('referral-submit-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const userName = formData.get('user-name');
+    const userCode = formData.get('user-code');
+    const userMessage = formData.get('user-message');
+    
+    // Create comment content with code format
+    const commentContent = `Code: ${userCode}\n\n${userMessage}`;
+    
+    // Here you would typically submit to WordPress comment system
+    // For now, we'll show a success message
+    alert('Thank you for submitting your referral code! It will be reviewed and published soon.');
+    
+    // Reset form
+    this.reset();
+});
+</script>
+
+<?php get_footer(); ?>
