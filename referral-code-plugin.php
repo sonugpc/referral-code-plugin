@@ -99,6 +99,30 @@ function rcp_register_meta_fields() {
             return current_user_can( 'edit_posts' );
         }
     ) );
+
+    register_post_meta( 'referral-codes', 'rcp_faqs', array(
+        'show_in_rest' => array(
+            'schema' => array(
+                'type'  => 'array',
+                'items' => array(
+                    'type' => 'object',
+                    'properties' => array(
+                        'question' => array(
+                            'type' => 'string',
+                        ),
+                        'answer' => array(
+                            'type' => 'string',
+                        ),
+                    ),
+                ),
+            ),
+        ),
+        'single'       => true,
+        'type'         => 'array',
+        'auth_callback' => function() {
+            return current_user_can( 'edit_posts' );
+        }
+    ) );
 }
 add_action( 'init', 'rcp_register_meta_fields' );
 
@@ -115,6 +139,48 @@ function rcp_enqueue_block_editor_assets() {
     );
 }
 add_action( 'enqueue_block_editor_assets', 'rcp_enqueue_block_editor_assets' );
+
+/**
+ * Set default FAQs when a new 'referral-codes' post is created.
+ *
+ * @param int     $post_id The post ID.
+ * @param WP_Post $post    The post object.
+ * @param bool    $update  Whether this is an existing post being updated or not.
+ */
+function rcp_set_default_faqs_on_new_post( $post_id, $post, $update ) {
+    // If this is not a new post, or if it's an autosave, or a revision, do nothing.
+    if ( $update || wp_is_post_autosave( $post_id ) || wp_is_post_revision( $post_id ) ) {
+        return;
+    }
+
+    // Only act on our custom post type.
+    if ( 'referral-codes' !== $post->post_type ) {
+        return;
+    }
+
+    // Check if FAQs are already set to prevent overwriting.
+    if ( get_post_meta( $post_id, 'rcp_faqs', true ) ) {
+        return;
+    }
+
+    $default_faqs = array(
+        array(
+            'question' => 'What is the {{post_title}} Referral Program?',
+            'answer'   => 'The referral code for {{post_title}} is **{{referral_code}}**. When you use this code during signup, you will receive a bonus of **{{signup_bonus}}**. Alternatively, you can use the direct referral link: {{referral_link}}.',
+        ),
+        array(
+            'question' => 'When will I receive my signup bonus?',
+            'answer'   => 'Most referral bonuses are processed instantly or within 24-48 hours after meeting the minimum requirements. Check the specific terms and conditions for {{post_title}} for exact timing.',
+        ),
+        array(
+            'question' => 'Can I use multiple referral codes?',
+            'answer'   => 'No, typically only one referral code can be used per account for {{post_title}}. Make sure to use the best available code during your initial signup.',
+        ),
+    );
+
+    update_post_meta( $post_id, 'rcp_faqs', $default_faqs );
+}
+add_action( 'save_post', 'rcp_set_default_faqs_on_new_post', 10, 3 );
 
 
 /**

@@ -11,6 +11,7 @@ $referral_code = get_post_meta( $post->ID, 'referral_code', true );
 $referral_link = get_post_meta( $post->ID, 'referral_link', true );
 $signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
 $app_logo = get_the_post_thumbnail_url( $post->ID, 'thumbnail' );
+$rcp_faqs = get_post_meta( $post->ID, 'rcp_faqs', true );
 $categories = get_the_category();
 $category_name = !empty($categories) ? $categories[0]->name : 'Referral Program';
 $current_year = date('Y');
@@ -26,7 +27,7 @@ $current_year = date('Y');
             <span class="breadcrumb-separator">></span>
             <a href="<?php echo get_post_type_archive_link('referral_code'); ?>">Referral Codes</a>
             <span class="breadcrumb-separator">></span>
-            <span class="breadcrumb-current"><?php the_title(); ?> Referral Code <?php echo $current_year; ?></span>
+            <span class="breadcrumb-current"><?php the_title(); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Offer'; ?> <?php echo $current_year; ?></span>
         </div>
     </div>
     
@@ -39,7 +40,7 @@ $current_year = date('Y');
                 <?php endif; ?>
                 
                 <div class="referral-info">
-                    <h1><?php the_title(); ?> Referral Code <?php echo $current_year; ?></h1>
+                    <h1><?php the_title(); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Offer'; ?> <?php echo $current_year; ?></h1>
                     <div class="referral-category"><?php echo esc_html($category_name); ?></div>
                     
                     <div class="referral-rating">
@@ -81,7 +82,7 @@ $current_year = date('Y');
                     <?php elseif ($referral_link): ?>
                         <div class="referral-code-display">
                             <span>Direct Link</span>
-                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_link); ?>', this)" aria-label="Copy referral link"></button>
+                            <a href="<?php echo esc_url($referral_link); ?>" target="_blank" rel="noopener" class="open-link-btn" aria-label="Open referral link in new tab"></a>
                         </div>
                     <?php endif; ?>
                     
@@ -106,7 +107,7 @@ $current_year = date('Y');
             <!-- Referral Details Section with Table -->
             <?php if ($referral_code || $referral_link || $signup_bonus): ?>
             <section class="card-section referral-details-section" id="referral-details">
-                <h2 class="section-header"><?php the_title() ?> Referral Details</h2>
+                <h2 class="section-header"><?php the_title() ?> <?php echo ($referral_code) ? 'Referral Details' : 'Referral Link Details'; ?></h2>
                 <table class="referral-details-table">
                     <thead>
                         <tr>
@@ -147,7 +148,7 @@ $current_year = date('Y');
             
             <!-- Content Section -->
             <section class="card-section">
-                <h2 class="section-header">About Referral Program</h2>
+                <h2 class="section-header">About <?php the_title(); ?> Referral Program</h2>
                 <div class="content-area">
                     <?php the_content(); ?>
                 </div>
@@ -156,8 +157,8 @@ $current_year = date('Y');
             <!-- Enhanced Submit Referral Code Section with Two-Line Layout -->
             <section class="card-section">
                 <div class="referral-submit-section">
-                    <h3>Share Your Referral Code </h3>
-                    <p>Help the community by sharing your working referral code</p>
+                    <h3>Share Your <?php echo ($referral_code) ? 'Referral Code' : 'Referral Link'; ?> </h3>
+                    <p>Help the community by sharing your working <?php echo ($referral_code) ? 'referral code' : 'referral link'; ?></p>
                     
                     <form class="submit-form" method="post" action="<?php echo esc_url(get_permalink()); ?>#comments">
                         <?php wp_nonce_field('referral_comment_nonce', 'referral_nonce'); ?>
@@ -178,11 +179,11 @@ $current_year = date('Y');
                         
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="user-code">Your Referral Code *</label>
+                                <label for="user-code">Your <?php echo ($referral_code) ? 'Referral Code' : 'Referral Link'; ?> *</label>
                                 <input type="text" id="user-code" name="user_referral_code" required>
                             </div>
                             <div class="form-group">
-                                <button type="submit" class="submit-btn">Submit Code</button>
+                                <button type="submit" class="btn">Submit <?php echo ($referral_code) ? 'Code' : 'Link'; ?></button>
                             </div>
                         </div>
                         
@@ -197,8 +198,8 @@ $current_year = date('Y');
             <!-- Referral Codes Tabs -->
             <section class="tabs-container">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="showTab('user-codes', this)">User Submitted Codes</button>
-                    <button class="tab-btn" onclick="showTab('official-codes', this)">Official Codes</button>
+                    <button class="tab-btn active" onclick="showTab('user-codes', this)"><?php echo ($referral_code) ? 'User Submitted Codes' : 'User Submitted Referral Links'; ?></button>
+                    <button class="tab-btn" onclick="showTab('official-codes', this)"><?php echo ($referral_code) ? 'Official Codes' : 'Official Links'; ?></button>
                 </div>
                 
                 <!-- User Submitted Codes Tab -->
@@ -226,8 +227,13 @@ $current_year = date('Y');
                                 
                                 <?php if ($user_referral_code): ?>
                                 <div class="user-referral-display">
-                                    <span><strong>Code:</strong> <?php echo esc_html($user_referral_code); ?></span>
-                                    <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($user_referral_code); ?>', this)" aria-label="Copy user referral code"></button>
+                                    <?php if ($referral_code): ?>
+                                        <span><strong>Code:</strong> <?php echo esc_html($user_referral_code); ?></span>
+                                        <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($user_referral_code); ?>', this)" aria-label="Copy user referral code"></button>
+                                    <?php else: ?>
+                                        <span><strong>Link:</strong> <a href="<?php echo esc_url($user_referral_code); ?>" target="_blank" rel="noopener"><?php echo esc_html($user_referral_code); ?></a></span>
+                                        <a href="<?php echo esc_url($user_referral_code); ?>" target="_blank" rel="noopener" class="open-link-btn" aria-label="Open user referral link in new tab"></a>
+                                    <?php endif; ?>
                                 </div>
                                 <?php endif; ?>
                                 
@@ -253,7 +259,7 @@ $current_year = date('Y');
                         <div class="user-code-item official-code">
                             <div class="code-header">
                                 <div class="user-name">
-                                    <span class="crown-icon">👑</span>Official Code
+                                    <span class="crown-icon">👑</span><?php echo ($referral_code) ? 'Official Code' : 'Official Link'; ?>
                                 </div>
                                 <div class="code-date"><?php echo get_the_modified_date('M j, Y'); ?></div>
                             </div>
@@ -267,8 +273,8 @@ $current_year = date('Y');
                             
                             <?php if ($referral_link): ?>
                             <div class="user-referral-display" style="margin-top: 8px;">
-                                <span><strong>Link:</strong> <span class="link-description">Direct registration</span></span>
-                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_link); ?>', this)" aria-label="Copy official referral link"></button>
+                                <span><strong>Link:</strong> <a href="<?php echo esc_url($referral_link); ?>" target="_blank" rel="noopener"><?php echo esc_html($referral_link); ?></a></span>
+                                <a href="<?php echo esc_url($referral_link); ?>" target="_blank" rel="noopener" class="open-link-btn" aria-label="Open official referral link in new tab"></a>
                             </div>
                             <?php endif; ?>
                             
@@ -291,52 +297,32 @@ $current_year = date('Y');
             <section class="card-section faq-section">
                 <h2 class="section-header">Frequently Asked Questions</h2>
                 <div class="faq-list" itemscope itemtype="https://schema.org/FAQPage">
-                    
-                    <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                        <h3 class="faq-question" itemprop="name">How do I use the <?php the_title(); ?> referral code?</h3>
-                        <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <div itemprop="text">
-                                <p>Copy the referral code and enter it during the signup process on <?php the_title(); ?>. The bonus will be credited to your account after completing the required actions.</p>
+                    <?php
+                    if ( ! empty( $rcp_faqs ) ) {
+                        foreach ( $rcp_faqs as $faq ) {
+                            $question = str_replace(
+                                array( '{{post_title}}', '{{referral_code}}' ),
+                                array( get_the_title(), $referral_code ),
+                                $faq['question']
+                            );
+                            $answer = str_replace(
+                                array( '{{post_title}}', '{{referral_code}}', '{{signup_bonus}}', '{{referral_link}}' ),
+                                array( get_the_title(), $referral_code, $signup_bonus, $referral_link ),
+                                $faq['answer']
+                            );
+                            ?>
+                            <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+                                <h3 class="faq-question" itemprop="name"><?php echo esc_html( $question ); ?></h3>
+                                <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
+                                    <div itemprop="text">
+                                        <p><?php echo wp_kses_post( $answer ); ?></p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                        <h3 class="faq-question" itemprop="name">When will I receive my signup bonus?</h3>
-                        <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <div itemprop="text">
-                                <p>Most referral bonuses are processed instantly or within 24-48 hours after meeting the minimum requirements. Check the specific terms and conditions for exact timing.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                        <h3 class="faq-question" itemprop="name">Can I use multiple referral codes?</h3>
-                        <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <div itemprop="text">
-                                <p>No, typically only one referral code can be used per account. Make sure to use the best available code during your initial signup.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                        <h3 class="faq-question" itemprop="name">Are these referral codes safe to use?</h3>
-                        <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <div itemprop="text">
-                                <p>Yes, all referral codes are legitimate promotional offers from <?php the_title(); ?>. Using referral codes is a standard practice and helps both new and existing users benefit from bonuses.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
-                        <h3 class="faq-question" itemprop="name">What should I do if my referral code doesn't work?</h3>
-                        <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                            <div itemprop="text">
-                                <p>If a referral code doesn't work, try another code from our list or contact <?php the_title(); ?> customer support for assistance. Codes may expire or have usage limits.</p>
-                            </div>
-                        </div>
-                    </div>
-                    
+                            <?php
+                        }
+                    }
+                    ?>
                 </div>
             </section>
             
@@ -459,21 +445,8 @@ if (isset($_POST['referral_code_submission']) && wp_verify_nonce($_POST['referra
     
     // FAQ toggle functionality
     function initFAQs() {
-        document.querySelectorAll('.faq-question').forEach(question => {
-            question.addEventListener('click', function() {
-                const faqItem = this.parentNode;
-                const answer = faqItem.querySelector('.faq-answer');
-                const isOpen = faqItem.classList.contains('open');
-                
-                // Close all other FAQs
-                document.querySelectorAll('.faq-item').forEach(item => {
-                    item.classList.remove('open');
-                });
-                
-                if (!isOpen) {
-                    faqItem.classList.add('open');
-                }
-            });
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.add('open');
         });
     }
     
