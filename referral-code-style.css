@@ -81,7 +81,6 @@
 
 .referral-hero-card {
     background: var(--card-background);
-    border: 1px solid var(--border-color);
     border-radius: var(--radius-xl);
     padding: 24px;
     display: flex;
@@ -123,7 +122,7 @@
     font-weight: 700;
     color: var(--text-primary);
     line-height: 1.2;
-    background: linear-gradient(135deg, var(--text-primary), var(--g-color));
+    background: var(--g-color);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -132,7 +131,6 @@
 .referral-category {
     display: inline-flex;
     align-items: center;
-    background: var(--primary-light);
     color: var(--g-color);
     padding: 6px 12px;
     border-radius: 20px;
@@ -177,11 +175,7 @@
     font-size: 0.9rem;
 }
 
-.referral-highlights {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
+
 
 .highlight-item {
     display: flex;
@@ -488,24 +482,6 @@
     transform: translateY(-1px);
 }
 
-.submit-btn {
-    background: linear-gradient(135deg, var(--g-color), var(--primary-hover));
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: var(--radius-md);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: var(--shadow-md);
-    align-self: end;
-}
-
-.submit-btn:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-lg);
-}
 
 /* Tabs - mobile optimized */
 .tabs-container {
@@ -582,10 +558,7 @@
     transition: all 0.3s ease;
 }
 
-.user-code-item:hover {
-    border-color: var(--g-color);
-    box-shadow: var(--shadow-sm);
-}
+
 
 .user-code-item.official-code {
     border: 2px solid var(--g-color);
@@ -623,7 +596,6 @@
     border: 1px solid var(--border-color);
     padding: 10px 12px;
     border-radius: var(--radius-md);
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -812,36 +784,6 @@
     font-size: 0.9rem;
 }
 
-/* Toast notifications */
-.toast {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-lg);
-    z-index: 1000;
-    font-weight: 600;
-    font-size: 0.8rem;
-    transform: translateX(100%);
-    opacity: 0;
-    transition: all 0.3s ease;
-}
-
-.toast.show {
-    transform: translateX(0);
-    opacity: 1;
-}
-
-.toast-success {
-    background: var(--secondary-color);
-    color: white;
-}
-
-.toast-info {
-    background: var(--g-color);
-    color: white;
-}
 
 /* Performance optimizations */
 * {
@@ -886,10 +828,7 @@ img {
         font-size: 1.5rem;
     }
     
-    .referral-highlights {
-        justify-content: center;
-        gap: 16px;
-    }
+   
     
     .referral-actions {
         width: 100%;
@@ -925,11 +864,6 @@ img {
     .form-row {
         grid-template-columns: 1fr;
         gap: 12px;
-    }
-    
-    .submit-btn {
-        width: 100%;
-        margin-top: 8px;
     }
     
     .referral-submit-section {
@@ -973,13 +907,7 @@ img {
         align-items: stretch;
         font-size: 0.75rem;
     }
-    
-    .referral-highlights {
-        flex-direction: column;
-        align-items: center;
-        gap: 12px;
-    }
-    
+
     .rating-item {
         font-size: 0.7rem;
         padding: 4px 8px;

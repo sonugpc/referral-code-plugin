@@ -50,7 +50,7 @@ $current_year = date('Y');
                         </div>
                     </div>
                     
-                    <div class="referral-highlights">
+                    <!-- <div class="referral-highlights">
                         <?php if ($signup_bonus): ?>
                         <div class="highlight-item">
                             <div class="highlight-label">Signup Bonus</div>
@@ -69,7 +69,7 @@ $current_year = date('Y');
                             <div class="highlight-label">Processing Time</div>
                             <div class="highlight-value">Instant</div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 
                 <div class="referral-actions">
@@ -147,7 +147,7 @@ $current_year = date('Y');
             
             <!-- Content Section -->
             <section class="card-section">
-                <h2 class="section-header">About This Referral Program</h2>
+                <h2 class="section-header">About Referral Program</h2>
                 <div class="content-area">
                     <?php the_content(); ?>
                 </div>
@@ -156,7 +156,7 @@ $current_year = date('Y');
             <!-- Enhanced Submit Referral Code Section with Two-Line Layout -->
             <section class="card-section">
                 <div class="referral-submit-section">
-                    <h3>Share Your Referral Code <?php echo $current_year; ?></h3>
+                    <h3>Share Your Referral Code </h3>
                     <p>Help the community by sharing your working referral code</p>
                     
                     <form class="submit-form" method="post" action="<?php echo esc_url(get_permalink()); ?>#comments">
@@ -346,36 +346,8 @@ $current_year = date('Y');
         <aside class="sidebar">
             <?php if (is_active_sidebar('referral-sidebar')) : ?>
                 <?php dynamic_sidebar('referral-sidebar'); ?>
-            <?php else : ?>
                 <!-- Default sidebar content if no widgets are added -->
-                <div class="sidebar-card default-sidebar">
-                    <h3>Quick Stats</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <span class="stat-number">4.5</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number"><?php echo wp_count_comments(get_the_ID())->approved; ?></span>
-                            <span class="stat-label">Codes</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-number">24h</span>
-                            <span class="stat-label">Support</span>
-                        </div>
-                    </div>
-                </div>
                 
-                <div class="sidebar-card default-sidebar">
-                    <h3>Key Features</h3>
-                    <ul class="features-list">
-                        <li><span class="check-icon">✓</span> Instant signup bonus</li>
-                        <li><span class="check-icon">✓</span> Fast processing</li>
-                        <li><span class="check-icon">✓</span> Secure platform</li>
-                        <li><span class="check-icon">✓</span> 24/7 customer support</li>
-                        <li><span class="check-icon">✓</span> Multiple payment options</li>
-                    </ul>
-                </div>
             <?php endif; ?>
         </aside>
     </div>
@@ -408,19 +380,7 @@ if (isset($_POST['referral_code_submission']) && wp_verify_nonce($_POST['referra
     }
 }
 
-// Add sidebar registration to functions.php
-function register_referral_sidebar() {
-    register_sidebar(array(
-        'name' => 'Referral Code Sidebar',
-        'id' => 'referral-sidebar',
-        'description' => 'Widgets in this area will be shown on referral code pages.',
-        'before_widget' => '<div class="sidebar-card widget">',
-        'after_widget' => '</div>',
-        'before_title' => '<h3 class="widget-title">',
-        'after_title' => '</h3>',
-    ));
-}
-add_action('widgets_init', 'register_referral_sidebar');
+
 ?>
 
 <script defer>

@@ -56,7 +56,7 @@ function rcp_register_post_type() {
         'show_ui'            => true,
         'show_in_menu'       => true,
         'query_var'          => true,
-        'rewrite'            => array( 'slug' => 'referral-codes' ),
+        'rewrite'            => array( 'slug' => 'referral-code' ),
         'capability_type'    => 'post',
         'has_archive'        => true,
         'hierarchical'       => false,
@@ -260,4 +260,17 @@ function rcp_clear_comments_cache( $comment_id ) {
 add_action( 'comment_post', 'rcp_clear_comments_cache' );
 add_action( 'edit_comment', 'rcp_clear_comments_cache' );
 add_action( 'wp_set_comment_status', 'rcp_clear_comments_cache' );
+// Add sidebar registration to functions.php
+function register_referral_sidebar() {
+    register_sidebar(array(
+        'name' => 'Referral Code Sidebar',
+        'id' => 'referral-sidebar',
+        'description' => 'Widgets in this area will be shown on referral code pages.',
+        'before_widget' => '<div class="sidebar-card widget">',
+        'after_widget' => '</div>',
+        'before_title' => '<h3 class="widget-title">',
+        'after_title' => '</h3>',
+    ));
+}
+add_action('widgets_init', 'register_referral_sidebar');
 ?>
