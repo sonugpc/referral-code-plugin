@@ -1,337 +1,576 @@
 <?php
 /**
  * Template Name: Single Referral Code
- * Description: Custom template for displaying referral code posts
+ * Description: Modern custom template for displaying referral code posts with enhanced UX
  */
 
 get_header(); ?>
 
 <style>
-/* Custom styles for referral code template */
-.referral-template {
-    background-color: #ffffff;
-    min-height: 100vh;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+/* Modern CSS Variables for consistent theming */
+:root {
+    --primary-hover: #5856eb;
+    --primary-light: #e0e7ff;
+    --secondary-color: #10b981;
+    --background-color: #f8fafc;
+    --card-background: #ffffff;
+    --border-color: #e2e8f0;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
 }
 
+/* Base template styles */
+.referral-template {
+    background-color: var(--background-color);
+    min-height: 100vh;
+}
+
+/* Breadcrumb styles */
+.breadcrumb-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 16px 16px 0 16px;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+}
+
+.breadcrumb a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb a:hover {
+    color: var(--g-color);
+}
+
+.breadcrumb-separator {
+    color: var(--text-muted);
+    margin: 0 4px;
+}
+
+.breadcrumb-current {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+/* Hero section with modern design */
 .referral-hero {
-    background: #ffffff;
-    padding: 40px 0;
-    margin-bottom: 30px;
-    border-bottom: 2px solid #2563eb;
+    padding: 0;
+    margin-bottom: 32px;
 }
 
 .referral-hero-content {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
-    color: #1f2937;
+    padding: 0 16px;
 }
 
-.referral-hero-inner {
-    background: #ffffff;
-    border: 2px solid #2563eb;
-    border-radius: 12px;
-    padding: 30px;
+.referral-hero-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-xl);
+    padding: 32px;
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 32px;
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+.referral-hero-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--g-color), var(--secondary-color));
 }
 
 .referral-logo {
     width: 120px;
     height: 120px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     object-fit: cover;
-    border: 2px solid #2563eb;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+    box-shadow: var(--shadow-md);
+}
+
+.referral-info {
+    flex: 1;
 }
 
 .referral-info h1 {
-    margin: 0 0 10px 0;
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: #1f2937;
+    margin: 0 0 16px 0;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1.2;
+    background: linear-gradient(135deg, var(--text-primary), var(--g-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 
 .referral-category {
-    display: inline-block;
-    background: #ffffff;
-    border: 1px solid #2563eb;
-    color: #2563eb;
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin: 10px 0;
+    display: inline-flex;
+    align-items: center;
+    background: var(--primary-light);
+    color: var(--g-color);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    border: 1px solid var(--g-color);
 }
 
 .referral-rating {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.rating-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+}
+
+.rating-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.rating-value {
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 700;
 }
 
 .stars {
-    color: #2563eb;
-    font-size: 1.1rem;
-}
-
-.rating-text {
-    font-size: 0.95rem;
-    color: #6b7280;
-}
-
-.container-with-sidebar {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 30px;
-}
-
-.main-content {
-    background: #ffffff;
-    border: 2px solid #2563eb;
-    border-radius: 12px;
-    padding: 30px;
-}
-
-.referral-details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 20px;
-    margin: 30px 0;
-}
-
-.referral-detail-box {
-    background: #ffffff;
-    border: 2px solid #2563eb;
-    color: #1f2937;
-    padding: 25px;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.detail-label {
-    font-size: 0.85rem;
-    color: #6b7280;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-}
-
-.detail-value {
-    font-size: 1.3rem;
-    font-weight: 600;
-    color: #1f2937;
-}
-
-.referral-code-value {
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    padding: 12px 15px;
-    border-radius: 8px;
-    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-    margin-top: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    color: #f59e0b;
     font-size: 1rem;
 }
 
-.copy-btn {
-    background: #ffffff;
-    border: 1px solid #2563eb;
-    color: #2563eb;
-    padding: 6px 12px;
-    border-radius: 6px;
+.referral-highlights {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.highlight-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.highlight-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+.highlight-value {
+    font-size: 1rem;
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+/* Action buttons section */
+.referral-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+    min-width: 280px;
+}
+
+.primary-action-btn {
+    background: linear-gradient(135deg, var(--g-color), var(--primary-hover));
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: var(--radius-lg);
+    font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
-    font-size: 0.8rem;
-    font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+.primary-action-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s;
+}
+
+.primary-action-btn:hover::before {
+    left: 100%;
+}
+
+.primary-action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.referral-code-display {
+    background: var(--card-background);
+    border: 2px solid var(--g-color);
+    padding: 16px 20px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    gap: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.referral-code-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, var(--primary-light) 0%, transparent 50%);
+    opacity: 0.3;
+}
+
+.copy-btn {
+    background: var(--g-color);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    min-height: 48px;
+    position: relative;
+    z-index: 1;
+    box-shadow: var(--shadow-sm);
+}
+
+.copy-btn:before {
+    content: '';
+    width: 20px;
+    height: 20px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='14' height='14' x='8' y='8' rx='2' ry='2'/%3E%3Cpath d='M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2'/%3E%3C/svg%3E");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: all 0.3s ease;
 }
 
 .copy-btn:hover {
-    background: #2563eb;
-    color: #ffffff;
+    background: var(--primary-hover);
+    transform: translateY(-1px) scale(1.05);
+    box-shadow: var(--shadow-md);
 }
 
-.content-area {
-    margin: 30px 0;
-    line-height: 1.7;
-    color: #374151;
+.copy-btn.copied {
+    background: var(--secondary-color);
 }
 
-.content-area h2 {
-    color: #1f2937;
-    border-bottom: 2px solid #2563eb;
-    padding-bottom: 12px;
-    margin-bottom: 24px;
-    font-size: 1.5rem;
-    font-weight: 600;
+.copy-btn.copied:before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 12 2 2 4-4'/%3E%3C/svg%3E");
 }
 
-.sidebar {
+/* Main container */
+.container-with-sidebar {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 32px;
+}
+
+.main-content {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 32px;
 }
 
-.sidebar-box {
-    background: #ffffff;
-    border: 2px solid #2563eb;
-    border-radius: 12px;
-    padding: 24px;
+/* Modern card sections */
+.card-section {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
 }
 
-.sidebar-box h3 {
-    margin: 0 0 16px 0;
-    color: #1f2937;
-    font-size: 1.2rem;
-    font-weight: 600;
-}
-
-.user-submission-info {
-    background: #ffffff;
-    border: 2px solid #2563eb;
-}
-
-.submission-stats {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #e5e7eb;
-}
-
-.stat-item {
-    text-align: center;
-}
-
-.stat-number {
-    font-size: 1.4rem;
+.section-header {
+    margin: 0 0 24px 0;
+    font-size: 1.5rem;
     font-weight: 700;
-    color: #2563eb;
+    color: var(--text-primary);
+    position: relative;
+    padding-bottom: 16px;
 }
 
-.stat-label {
-    font-size: 0.8rem;
-    color: #6b7280;
+.section-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--g-color), var(--secondary-color);
+    border-radius: 2px;
+}
+
+/* Modern referral details with primary theme */
+.referral-details-section {
+    border: 2px solid var(--g-color);
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--card-background) 100%);
+    position: relative;
+}
+
+.referral-details-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--g-color), var(--secondary-color);
+}
+
+.referral-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.referral-details-table th,
+.referral-details-table td {
+    padding: 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.referral-details-table th {
+    background: rgba(99, 102, 241, 0.1);
+    font-weight: 600;
+    color: var(--g-color);
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.referral-details-table td {
+    color: var(--text-primary);
     font-weight: 500;
 }
 
-.referral-submit-box {
-    background: #ffffff;
-    border: 2px dashed #2563eb;
-    border-radius: 12px;
-    padding: 30px;
-    text-align: center;
-    margin: 40px 0;
+.referral-details-table tr:last-child th,
+.referral-details-table tr:last-child td {
+    border-bottom: none;
 }
 
-.referral-submit-box h3 {
-    color: #1f2937;
-    font-size: 1.3rem;
+.table-code-display {
+    background: var(--card-background);
+    border: 1px solid var(--g-color);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+    font-size: 0.875rem;
     font-weight: 600;
-    margin-bottom: 8px;
 }
 
-.referral-submit-box p {
-    color: #6b7280;
-    margin-bottom: 24px;
+.table-copy-btn {
+    background: var(--g-color);
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.table-copy-btn:hover {
+    background: var(--primary-hover);
+    transform: scale(1.05);
+}
+
+/* Modern form styling */
+.referral-submit-section {
+    background: linear-gradient(135deg, var(--primary-light) 0%, var(--card-background) 100%);
+    border: 2px solid var(--g-color);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.referral-submit-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--g-color), var(--secondary-color);
 }
 
 .submit-form {
     display: grid;
-    gap: 16px;
+    gap: 20px;
     max-width: 500px;
-    margin: 0 auto;
+    margin: 24px auto 0;
 }
 
 .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
     text-align: left;
 }
 
 .form-group label {
+    display: block;
+    font-size: 0.875rem;
     font-weight: 600;
-    color: #374151;
-    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 8px;
 }
 
 .form-group input,
 .form-group textarea {
-    padding: 12px 16px;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
+    width: 100%;
+    padding: 16px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--radius-md);
     font-size: 1rem;
-    font-family: inherit;
-    transition: border-color 0.2s ease;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    background: var(--card-background);
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
-    border-color: #2563eb;
+    border-color: var(--g-color);
+    box-shadow: 0 0 0 4px var(--primary-light);
+    transform: translateY(-1px);
 }
 
 .submit-btn {
-    background: #2563eb;
-    color: #ffffff;
+    background: linear-gradient(135deg, var(--g-color), var(--primary-hover));
+    color: white;
     border: none;
-    padding: 14px 28px;
-    border-radius: 8px;
+    padding: 16px 32px;
+    border-radius: var(--radius-md);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
-    transition: background-color 0.2s ease;
-    margin-top: 8px;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
 }
 
 .submit-btn:hover {
-    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
 
-.referral-tabs {
-    margin: 40px 0;
+/* Modern tabs */
+.tabs-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
 }
 
 .tab-buttons {
     display: flex;
-    gap: 2px;
-    margin-bottom: 20px;
-    border: 2px solid #2563eb;
-    border-radius: 8px;
-    overflow: hidden;
+    background: #f8fafc;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tab-btn {
-    background: #ffffff;
-    border: none;
-    padding: 12px 24px;
-    cursor: pointer;
-    font-weight: 500;
-    color: #2563eb;
-    transition: all 0.2s ease;
     flex: 1;
-    font-size: 0.95rem;
+    background: transparent;
+    border: none;
+    padding: 20px 24px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+    position: relative;
 }
 
 .tab-btn:hover {
-    background: #eff6ff;
+    color: var(--text-primary);
+    background: #f1f5f9;
 }
 
 .tab-btn.active {
-    background: #2563eb;
-    color: #ffffff;
+    color: var(--g-color);
+    background: var(--card-background);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--g-color);
 }
 
 .tab-content {
+    padding: 32px;
     display: none;
 }
 
@@ -339,70 +578,133 @@ get_header(); ?>
     display: block;
 }
 
-.user-submitted-codes {
-    display: grid;
-    gap: 16px;
+/* User codes styling */
+.user-codes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 .user-code-item {
-    background: #ffffff;
-    border: 2px solid #e5e7eb;
-    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
     padding: 20px;
+    background: #f8fafc;
+    transition: all 0.3s ease;
 }
 
 .user-code-item:hover {
-    border-color: #2563eb;
-    transition: border-color 0.2s ease;
+    border-color: var(--g-color);
+    box-shadow: var(--shadow-sm);
 }
 
 .code-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 16px;
 }
 
 .user-name {
     font-weight: 600;
-    color: #1f2937;
-    font-size: 0.95rem;
+    color: var(--text-primary);
+    font-size: 1rem;
 }
 
 .code-date {
-    font-size: 0.85rem;
-    color: #6b7280;
+    font-size: 0.875rem;
+    color: var(--text-muted);
 }
 
-.user-referral-code {
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    padding: 12px;
-    border-radius: 8px;
+.user-referral-display {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
     font-family: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin: 12px 0;
-    font-size: 0.9rem;
+    font-size: 0.875rem;
 }
 
+/* Sidebar styles */
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.sidebar-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    box-shadow: var(--shadow-md);
+}
+
+.sidebar-card h3 {
+    margin: 0 0 20px 0;
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+/* Responsive design */
 @media (max-width: 768px) {
     .container-with-sidebar {
         grid-template-columns: 1fr;
+        gap: 24px;
     }
     
-    .referral-hero-inner {
+    .referral-hero-card {
         flex-direction: column;
         text-align: center;
-    }
-    
-    .referral-details-grid {
-        grid-template-columns: 1fr;
+        padding: 24px;
+        gap: 24px;
     }
     
     .referral-info h1 {
-        font-size: 1.8rem;
+        font-size: 2rem;
+    }
+    
+    .referral-highlights {
+        justify-content: center;
+        gap: 24px;
+    }
+    
+    .referral-actions {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .referral-details-table {
+        font-size: 0.875rem;
+    }
+    
+    .referral-details-table th,
+    .referral-details-table td {
+        padding: 12px 8px;
+    }
+    
+    .tab-buttons {
+        flex-direction: column;
+    }
+    
+    .card-section {
+        padding: 24px;
+    }
+}
+
+@media (max-width: 480px) {
+    .referral-hero-content,
+    .container-with-sidebar {
+        padding: 0 12px;
+    }
+    
+    .breadcrumb-container {
+        padding: 12px 12px 0 12px;
     }
 }
 </style>
@@ -418,23 +720,85 @@ get_header(); ?>
         // Get categories
         $categories = get_the_category();
         $category_name = !empty($categories) ? $categories[0]->name : 'Referral Program';
+        $current_year = date('Y');
     ?>
     
-    <!-- Hero Section - Full Width -->
+    <!-- Breadcrumb Navigation -->
+    <div class="breadcrumb-container">
+        <div class="breadcrumb">
+            <a href="<?php echo home_url(); ?>">Home</a>
+            <span class="breadcrumb-separator">></span>
+            <a href="<?php echo get_post_type_archive_link('referral_code'); ?>">Referral Codes</a>
+            <span class="breadcrumb-separator">></span>
+            <span class="breadcrumb-current"><?php the_title(); ?> Referral Code <?php echo $current_year; ?></span>
+        </div>
+    </div>
+    
+    <!-- Hero Section -->
     <div class="referral-hero">
         <div class="referral-hero-content">
-            <div class="referral-hero-inner">
+            <div class="referral-hero-card">
                 <?php if ($app_logo): ?>
                     <img src="<?php echo esc_url($app_logo); ?>" alt="<?php the_title(); ?>" class="referral-logo">
                 <?php endif; ?>
                 
                 <div class="referral-info">
-                    <h1><?php the_title(); ?></h1>
+                    <h1><?php the_title(); ?> Referral Code [currentyear]</h1>
                     <div class="referral-category"><?php echo esc_html($category_name); ?></div>
+                    
                     <div class="referral-rating">
-                        <div class="stars">★★★★★</div>
-                        <div class="rating-text">4.5 (1,234 reviews)</div>
+                        <div class="rating-item">
+                            <span class="rating-label">🏷️</span>
+                            <span class="rating-value">4.5/5</span>
+                            <span class="stars">★★★★★</span>
+                        </div>
+                      
                     </div>
+                    
+                    <div class="referral-highlights">
+                        <?php if ($signup_bonus): ?>
+                        <div class="highlight-item">
+                            <div class="highlight-label">Signup Bonus</div>
+                            <div class="highlight-value"><?php echo esc_html($signup_bonus); ?></div>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <?php if ($referral_code): ?>
+                        <div class="highlight-item">
+                            <div class="highlight-label">Referral Code</div>
+                            <div class="highlight-value"><?php echo esc_html($referral_code); ?></div>
+                        </div>
+                        <?php endif; ?>
+                        
+                        <div class="highlight-item">
+                            <div class="highlight-label">Processing Time</div>
+                            <div class="highlight-value">Instant</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="referral-actions">
+                    <?php if ($referral_code): ?>
+                        <div class="referral-code-display">
+                            <span><?php echo esc_html($referral_code); ?></span>
+                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>', this)"></button>
+                        </div>
+                    <?php elseif ($referral_link): ?>
+                        <div class="referral-code-display">
+                            <span>Direct Link</span>
+                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_link); ?>', this)"></button>
+                        </div>
+                    <?php endif; ?>
+                    
+                    <?php if ($referral_link): ?>
+                        <a href="<?php echo esc_url($referral_link); ?>" target="_blank" class="primary-action-btn">
+                            Visit  <?php echo the_title(); ?>
+                        </a>
+                    <?php else: ?>
+                        <button class="primary-action-btn" onclick="scrollToSection('referral-details')">
+                            View Details
+                        </button>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
@@ -443,86 +807,113 @@ get_header(); ?>
     <!-- Main Content with Sidebar -->
     <div class="container-with-sidebar">
         <main class="main-content">
-            <!-- Referral Details Grid -->
+            
+            <!-- Referral Details Section with Table -->
             <?php if ($referral_code || $referral_link || $signup_bonus): ?>
-            <div class="referral-details-grid">
-                <?php if ($referral_code): ?>
-                <div class="referral-detail-box">
-                    <div class="detail-label">Referral Code</div>
-                    <div class="detail-value">
-                        <div class="referral-code-value">
-                            <span><?php echo esc_html($referral_code); ?></span>
-                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>')">Copy</button>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
-                
-                <?php if ($signup_bonus): ?>
-                <div class="referral-detail-box">
-                    <div class="detail-label">Signup Bonus</div>
-                    <div class="detail-value"><?php echo esc_html($signup_bonus); ?></div>
-                </div>
-                <?php endif; ?>
-                
-                <?php if ($referral_link): ?>
-                <div class="referral-detail-box">
-                    <div class="detail-label">Referral Link</div>
-                    <div class="detail-value">
-                        <div class="referral-code-value">
-                            <span style="font-size: 0.9rem; word-break: break-all;"><?php echo esc_html(substr($referral_link, 0, 30)) . '...'; ?></span>
-                            <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_link); ?>')">Copy</button>
-                        </div>
-                    </div>
-                </div>
-                <?php endif; ?>
+            <div class="card-section referral-details-section" id="referral-details">
+                <h2 class="section-header">Referral Details</h2>
+                <table class="referral-details-table">
+                    <thead>
+                        <tr>
+                            <th>Detail</th>
+                            <th>Information</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if ($referral_code): ?>
+                        <tr>
+                            <td>Referral Code</td>
+                            <td>
+                                 <span><?php echo esc_html($referral_code); ?></span>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                        
+                        <?php if ($referral_link): ?>
+                        <tr>
+                            <td>Referral Link</td>
+                            <td>
+                              <?php echo esc_html($referral_link); ?>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
+                        
+                        <?php if ($signup_bonus): ?>
+                        <tr>
+                            <td>Signup Bonus</td>
+                            <td><strong style="color: var(--secondary-color);"><?php echo esc_html($signup_bonus); ?></strong></td>
+                        </tr>
+                        <?php endif; ?>
+                        
+                       
+                       
+                        <tr>
+                            <td>Last Updated</td>
+                            <td><?php echo get_the_modified_date('M j, Y'); ?></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <?php endif; ?>
             
-            <!-- Content Area -->
-            <div class="content-area">
-                <h2>About This Referral Program</h2>
-                <?php the_content(); ?>
+            <!-- Content Section -->
+            <div class="card-section">
+                <h2 class="section-header">About This Referral Program</h2>
+                <div class="content-area">
+                    <?php the_content(); ?>
+                </div>
             </div>
             
-            <!-- Referral Code Submission Box -->
-            <div class="referral-submit-box">
-                <h3>📤 Submit Your Referral Code</h3>
-                <p>Help the community by sharing your referral code!</p>
-                
-                <form class="submit-form" id="referral-submit-form">
-                    <div class="form-group">
-                        <label for="user-name">Your Name</label>
-                        <input type="text" id="user-name" name="user-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="user-code">Your Referral Code</label>
-                        <input type="text" id="user-code" name="user-code" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="user-message">Additional Details (Optional)</label>
-                        <textarea id="user-message" name="user-message" rows="3" placeholder="Any special instructions or notes..."></textarea>
-                    </div>
-                    <button type="submit" class="submit-btn">Submit Referral Code</button>
-                </form>
+            <!-- Enhanced Submit Referral Code Section -->
+            <div class="card-section">
+                <div class="referral-submit-section">
+                    <h3 style="margin: 0 0 8px 0; color: var(--text-primary); font-size: 1.5rem; font-weight: 700;">Share Your Referral Code</h3>
+                    <p style="color: var(--text-secondary); font-size: 1rem; margin: 0 0 24px 0;">Help the community by sharing your working referral code</p>
+                    
+                    <form class="submit-form" method="post" action="<?php echo esc_url(get_permalink()); ?>#comments">
+                        <?php wp_nonce_field('referral_comment_nonce', 'referral_nonce'); ?>
+                        <input type="hidden" name="comment_post_ID" value="<?php echo get_the_ID(); ?>">
+                        <input type="hidden" name="comment_parent" value="0">
+                        <input type="hidden" name="referral_code_submission" value="1">
+                        
+                        <div class="form-group">
+                            <label for="author">Your Name *</label>
+                            <input type="text" id="author" name="author" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Your Email *</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="user-code">Your Referral Code *</label>
+                            <input type="text" id="user-code" name="user_referral_code" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="comment">Additional Notes (Optional)</label>
+                            <textarea id="comment" name="comment" rows="3" placeholder="Any special instructions or bonus details..."></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn">Submit Code</button>
+                    </form>
+                </div>
             </div>
             
             <!-- Referral Codes Tabs -->
-            <div class="referral-tabs">
+            <div class="tabs-container">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" onclick="showTab('user-codes')">User Submitted Codes</button>
-                    <button class="tab-btn" onclick="showTab('bigtricks-codes')">BigTricks Codes</button>
+                    <button class="tab-btn active" onclick="showTab('user-codes', this)">User Submitted Codes</button>
+                    <button class="tab-btn" onclick="showTab('official-codes', this)">Official Codes</button>
                 </div>
                 
                 <!-- User Submitted Codes Tab -->
                 <div id="user-codes" class="tab-content active">
-                    <div class="user-submitted-codes">
+                    <div class="user-codes-list">
                         <?php
                         // Get comments for this post
                         $comments = get_comments(array(
                             'post_id' => get_the_ID(),
                             'status' => 'approve',
-                            'number' => 10
+                            'number' => 10,
+                            'order' => 'DESC'
                         ));
                         
                         if ($comments): ?>
@@ -534,113 +925,148 @@ get_header(); ?>
                                 </div>
                                 
                                 <?php 
-                                // Extract referral code from comment (assuming it's in the format "Code: XXXXX")
-                                $comment_text = $comment->comment_content;
-                                preg_match('/(?:Code:|code:)\s*([A-Za-z0-9]+)/i', $comment_text, $matches);
-                                $extracted_code = isset($matches[1]) ? $matches[1] : '';
+                                // Get referral code from comment meta or extract from content
+                                $user_referral_code = get_comment_meta($comment->comment_ID, 'user_referral_code', true);
+                                
+                                if (!$user_referral_code) {
+                                    // Try to extract from comment content as fallback
+                                    $comment_text = $comment->comment_content;
+                                    preg_match('/(?:Code:|code:)\s*([A-Za-z0-9]+)/i', $comment_text, $matches);
+                                    $user_referral_code = isset($matches[1]) ? $matches[1] : '';
+                                }
                                 ?>
                                 
-                                <?php if ($extracted_code): ?>
-                                <div class="user-referral-code">
-                                    <span><strong>Code:</strong> <?php echo esc_html($extracted_code); ?></span>
-                                    <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($extracted_code); ?>')">Copy</button>
+                                <?php if ($user_referral_code): ?>
+                                <div class="user-referral-display">
+                                    <span><strong>Code:</strong> <?php echo esc_html($user_referral_code); ?></span>
+                                    <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($user_referral_code); ?>', this)"></button>
                                 </div>
                                 <?php endif; ?>
                                 
-                                <p><?php echo wp_kses_post($comment_text); ?></p>
+                                <?php if ($comment->comment_content): ?>
+                                <p style="margin: 12px 0 0 0; font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5;">
+                                    <?php echo wp_kses_post($comment->comment_content); ?>
+                                </p>
+                                <?php endif; ?>
                             </div>
                             <?php endforeach; ?>
                         <?php else: ?>
-                            <p style="text-align: center; color: #666; padding: 40px;">No user codes submitted yet. Be the first to share!</p>
+                            <div class="empty-state">
+                                <div style="font-size: 3rem; margin-bottom: 16px; opacity: 0.3;">📝</div>
+                                <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">No codes shared yet</h4>
+                                <p style="margin: 0; color: var(--text-secondary);">Be the first to share your referral code with the community!</p>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
                 
-                <!-- BigTricks Codes Tab -->
-                <div id="bigtricks-codes" class="tab-content">
-                    <div class="user-submitted-codes">
-                        <?php if ($referral_code): ?>
-                        <div class="user-code-item">
+                <!-- Official Codes Tab -->
+                <div id="official-codes" class="tab-content">
+                    <div class="user-codes-list">
+                        <?php if ($referral_code || $referral_link): ?>
+                        <div class="user-code-item" style="border: 2px solid var(--g-color); background: linear-gradient(135deg, var(--primary-light), var(--card-background));">
                             <div class="code-header">
-                                <div class="user-name">BigTricks Official</div>
-                                <div class="code-date"><?php echo date('M j, Y'); ?></div>
+                                <div class="user-name" style="color: var(--g-color);">
+                                    <span style="margin-right: 8px;">👑</span>Official Code
+                                </div>
+                                <div class="code-date"><?php echo get_the_modified_date('M j, Y'); ?></div>
                             </div>
-                            <div class="user-referral-code">
+                            
+                            <?php if ($referral_code): ?>
+                            <div class="user-referral-display">
                                 <span><strong>Code:</strong> <?php echo esc_html($referral_code); ?></span>
-                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>')">Copy</button>
+                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>', this)"></button>
                             </div>
-                            <p>Official referral code from BigTricks. Get the best signup bonus!</p>
+                            <?php endif; ?>
+                            
+                            <?php if ($referral_link): ?>
+                            <div class="user-referral-display" style="margin-top: 8px;">
+                                <span><strong>Link:</strong> <span style="font-size: 0.75rem; opacity: 0.8;">Direct registration</span></span>
+                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_link); ?>', this)"></button>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <p style="margin: 12px 0 0 0; font-size: 0.875rem; color: var(--text-secondary);">
+                                Official referral <?php echo $referral_code ? 'code' : 'link'; ?> with guaranteed signup bonus and best rates.
+                            </p>
                         </div>
                         <?php else: ?>
-                            <p style="text-align: center; color: #666; padding: 40px;">No BigTricks codes available yet.</p>
+                            <div class="empty-state">
+                                <div style="font-size: 3rem; margin-bottom: 16px; opacity: 0.3;">🏢</div>
+                                <h4 style="margin: 0 0 8px 0; color: var(--text-primary);">No official codes available</h4>
+                                <p style="margin: 0; color: var(--text-secondary);">Check back later for official referral codes.</p>
+                            </div>
                         <?php endif; ?>
                     </div>
                 </div>
             </div>
+            
         </main>
         
         <!-- Sidebar -->
         <aside class="sidebar">
-            <!-- User Submission Info -->
-            <div class="sidebar-box user-submission-info">
-                <h3>📊 Community Stats</h3>
-                <p>Join thousands of users sharing referral codes!</p>
-                <div class="submission-stats">
+            <!-- Quick Stats Card -->
+            <div class="sidebar-card">
+                <h3>Quick Stats</h3>
+                <div class="stats-grid">
                     <div class="stat-item">
-                        <div class="stat-number"><?php echo wp_count_comments(get_the_ID())->approved; ?></div>
-                        <div class="stat-label">Codes Shared</div>
+                        <span class="stat-number">4.5</span>
+                        <span class="stat-label">Rating</span>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">4.8</div>
-                        <div class="stat-label">Avg Rating</div>
+                        <span class="stat-number"><?php echo wp_count_comments(get_the_ID())->approved; ?></span>
+                        <span class="stat-label">Codes</span>
                     </div>
                     <div class="stat-item">
-                        <div class="stat-number">98%</div>
-                        <div class="stat-label">Success Rate</div>
+                        <span class="stat-number">24h</span>
+                        <span class="stat-label">Support</span>
                     </div>
                 </div>
             </div>
             
-            <!-- Quick Info -->
-            <div class="sidebar-box">
-                <h3>🔥 Quick Info</h3>
-                    <ul style="list-style: none; padding: 0;">
-                    <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #374151; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: #2563eb;">✓</span> Instant Activation
-                    </li>
-                    <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #374151; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: #2563eb;">✓</span> No Hidden Fees
-                    </li>
-                    <li style="padding: 10px 0; border-bottom: 1px solid #e5e7eb; color: #374151; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: #2563eb;">✓</span> Bonus Rewards
-                    </li>
-                    <li style="padding: 10px 0; color: #374151; display: flex; align-items: center; gap: 8px;">
-                        <span style="color: #2563eb;">✓</span> Mobile App Available
-                    </li>
+            <!-- Features Card -->
+            <div class="sidebar-card">
+                <h3>Key Features</h3>
+                <ul class="features-list">
+                    <li><span class="check-icon">✓</span> Instant signup bonus</li>
+                    <li><span class="check-icon">✓</span> Fast processing</li>
+                    <li><span class="check-icon">✓</span> Secure platform</li>
+                    <li><span class="check-icon">✓</span> 24/7 customer support</li>
+                    <li><span class="check-icon">✓</span> Multiple payment options</li>
                 </ul>
             </div>
             
-            <!-- Related Posts -->
-            <div class="sidebar-box">
-                <h3>🔗 Related Offers</h3>
+            <!-- Related Programs Card -->
+            <div class="sidebar-card">
+                <h3>Related Programs</h3>
                 <?php
                 $related_posts = get_posts(array(
                     'post_type' => get_post_type(),
-                    'numberposts' => 3,
-                    'exclude' => array(get_the_ID()),
-                    'category__in' => wp_get_post_categories(get_the_ID())
+                    'posts_per_page' => 3,
+                    'post__not_in' => array(get_the_ID()),
+                    'orderby' => 'rand'
                 ));
                 
                 if ($related_posts): ?>
-                    <ul style="list-style: none; padding: 0;">
-                        <?php foreach ($related_posts as $related): ?>
-                        <li style="margin-bottom: 15px;">
-                            <a href="<?php echo get_permalink($related->ID); ?>" style="text-decoration: none; color: #333; font-weight: 500;">
-                                <?php echo esc_html($related->post_title); ?>
-                            </a>
-                        </li>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <?php foreach ($related_posts as $related_post): ?>
+                        <a href="<?php echo get_permalink($related_post->ID); ?>" 
+                           style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); text-decoration: none; color: var(--text-primary); transition: all 0.2s ease;">
+                            <?php if (get_the_post_thumbnail($related_post->ID, 'thumbnail')): ?>
+                                <img src="<?php echo get_the_post_thumbnail_url($related_post->ID, 'thumbnail'); ?>" 
+                                     style="width: 40px; height: 40px; border-radius: var(--radius-sm); object-fit: cover;">
+                            <?php endif; ?>
+                            <div>
+                                <div style="font-weight: 600; font-size: 0.875rem; margin-bottom: 4px;">
+                                    <?php echo get_the_title($related_post->ID); ?>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-muted);">
+                                    View Details
+                                </div>
+                            </div>
+                        </a>
                         <?php endforeach; ?>
-                    </ul>
+                    </div>
                 <?php endif; ?>
             </div>
         </aside>
@@ -649,57 +1075,272 @@ get_header(); ?>
     <?php endwhile; ?>
 </div>
 
-<script>
-// Copy to clipboard function
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(function() {
-        // Show success message
-        const btn = event.target;
-        const originalText = btn.textContent;
-        btn.textContent = 'Copied!';
-        btn.style.background = 'rgba(34, 197, 94, 0.3)';
+<?php
+// Handle referral code submission
+if (isset($_POST['referral_code_submission']) && wp_verify_nonce($_POST['referral_nonce'], 'referral_comment_nonce')) {
+    $comment_data = array(
+        'comment_post_ID' => intval($_POST['comment_post_ID']),
+        'comment_author' => sanitize_text_field($_POST['author']),
+        'comment_author_email' => sanitize_email($_POST['email']),
+        'comment_content' => sanitize_textarea_field($_POST['comment']),
+        'comment_type' => '',
+        'comment_parent' => 0,
+        'comment_approved' => 0, // Set to pending for moderation
+    );
+    
+    $comment_id = wp_insert_comment($comment_data);
+    
+    if ($comment_id) {
+        // Save the referral code as comment meta
+        add_comment_meta($comment_id, 'user_referral_code', sanitize_text_field($_POST['user_referral_code']));
         
-        setTimeout(() => {
-            btn.textContent = originalText;
-            btn.style.background = 'rgba(255, 255, 255, 0.3)';
-        }, 2000);
-    });
+        // Redirect to avoid resubmission
+        wp_redirect(get_permalink() . '#comments');
+        exit;
+    }
+}
+?>
+
+<script>
+// Enhanced copy to clipboard function with modern feedback
+function copyToClipboard(text, button) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function() {
+            showCopySuccess(button);
+        }).catch(function(err) {
+            fallbackCopyTextToClipboard(text, button);
+        });
+    } else {
+        fallbackCopyTextToClipboard(text, button);
+    }
 }
 
-// Tab switching function
-function showTab(tabId) {
-    // Hide all tab contents
+function fallbackCopyTextToClipboard(text, button) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    try {
+        document.execCommand('copy');
+        showCopySuccess(button);
+    } catch (err) {
+        console.error('Could not copy text: ', err);
+    }
+    
+    document.body.removeChild(textArea);
+}
+
+function showCopySuccess(button) {
+    button.classList.add('copied');
+    
+    // Create and show success toast
+    showToast('Copied to clipboard!', 'success');
+    
+    setTimeout(() => {
+        button.classList.remove('copied');
+    }, 2000);
+}
+
+// Modern toast notification system
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: ${type === 'success' ? 'var(--secondary-color)' : 'var(--g-color)'};
+        color: white;
+        padding: 12px 24px;
+        border-radius: var(--radius-md);
+        box-shadow: var(--shadow-lg);
+        z-index: 1000;
+        font-weight: 600;
+        font-size: 0.875rem;
+        animation: slideInRight 0.3s ease, slideOutRight 0.3s ease 2.7s forwards;
+    `;
+    toast.textContent = message;
+    
+    // Add animation keyframes if not already added
+    if (!document.querySelector('#toast-animations')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animations';
+        style.textContent = `
+            @keyframes slideInRight {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOutRight {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        if (toast.parentNode) {
+            toast.parentNode.removeChild(toast);
+        }
+    }, 3000);
+}
+
+// Enhanced tab switching with smooth transitions
+function showTab(tabId, button) {
+    // Hide all tab contents with fade out
     const tabContents = document.querySelectorAll('.tab-content');
-    tabContents.forEach(tab => tab.classList.remove('active'));
+    tabContents.forEach(tab => {
+        tab.style.opacity = '0';
+        setTimeout(() => {
+            tab.classList.remove('active');
+        }, 150);
+    });
     
     // Remove active class from all buttons
     const tabButtons = document.querySelectorAll('.tab-btn');
     tabButtons.forEach(btn => btn.classList.remove('active'));
     
-    // Show selected tab
-    document.getElementById(tabId).classList.add('active');
-    event.target.classList.add('active');
+    // Show selected tab with fade in
+    setTimeout(() => {
+        const selectedTab = document.getElementById(tabId);
+        selectedTab.classList.add('active');
+        setTimeout(() => {
+            selectedTab.style.opacity = '1';
+        }, 50);
+        button.classList.add('active');
+    }, 150);
 }
 
-// Handle form submission
-document.getElementById('referral-submit-form').addEventListener('submit', function(e) {
-    e.preventDefault();
+// Smooth scroll to section
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
+}
+
+// Form validation and enhancement
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.submit-form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('.submit-btn');
+            submitBtn.style.opacity = '0.7';
+            submitBtn.textContent = 'Submitting...';
+            submitBtn.disabled = true;
+            
+            // Re-enable button after a delay if form doesn't redirect
+            setTimeout(() => {
+                submitBtn.style.opacity = '1';
+                submitBtn.textContent = 'Submit Code';
+                submitBtn.disabled = false;
+            }, 5000);
+        });
+        
+        // Add real-time validation feedback
+        const inputs = form.querySelectorAll('input[required], textarea[required]');
+        inputs.forEach(input => {
+            input.addEventListener('blur', function() {
+                if (!this.value.trim()) {
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    this.style.borderColor = 'var(--secondary-color)';
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                if (this.style.borderColor === 'rgb(239, 68, 68)') {
+                    this.style.borderColor = 'var(--border-color)';
+                }
+            });
+        });
+    }
     
-    const formData = new FormData(this);
-    const userName = formData.get('user-name');
-    const userCode = formData.get('user-code');
-    const userMessage = formData.get('user-message');
-    
-    // Create comment content with code format
-    const commentContent = `Code: ${userCode}\n\n${userMessage}`;
-    
-    // Here you would typically submit to WordPress comment system
-    // For now, we'll show a success message
-    alert('Thank you for submitting your referral code! It will be reviewed and published soon.');
-    
-    // Reset form
-    this.reset();
+    // Add hover effects to cards
+    const cards = document.querySelectorAll('.user-code-item, .sidebar-card');
+    cards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+            this.style.transition = 'all 0.3s ease';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+
+// Initialize tab opacity
+document.addEventListener('DOMContentLoaded', function() {
+    const activeTab = document.querySelector('.tab-content.active');
+    if (activeTab) {
+        activeTab.style.opacity = '1';
+    }
 });
 </script>
+
+<style>
+/* Additional responsive and animation styles */
+.tab-content {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.tab-content.active {
+    opacity: 1;
+}
+
+.user-code-item,
+.sidebar-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+}
+
+.empty-state h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .referral-code-display {
+        flex-direction: column;
+        gap: 12px;
+        text-align: center;
+    }
+    
+    .referral-code-display span {
+        word-break: break-all;
+    }
+    
+    .copy-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .table-code-display {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+    
+    .table-copy-btn {
+        width: 100%;
+    }
+}
+</style>
 
 <?php get_footer(); ?>
