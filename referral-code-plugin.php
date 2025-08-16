@@ -173,4 +173,21 @@ function rcp_referral_code_box_shortcode( $atts ) {
     return ob_get_clean();
 }
 add_shortcode( 'referral_code_box', 'rcp_referral_code_box_shortcode' );
+
+/**
+ * Load a custom template for single 'referral-codes' posts.
+ *
+ * @param string $template The path of the template to include.
+ * @return string The path of the template to include.
+ */
+function rcp_load_single_template( $template ) {
+    if ( is_singular( 'referral-codes' ) ) {
+        $plugin_template = plugin_dir_path( __FILE__ ) . 'templates/single-referral-codes.php';
+        if ( file_exists( $plugin_template ) ) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter( 'single_template', 'rcp_load_single_template' );
 ?>

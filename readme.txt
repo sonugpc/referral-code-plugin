@@ -24,6 +24,7 @@ This plugin provides a complete solution for affiliate marketers and bloggers wh
 *   **Gutenberg Integration:** A seamless editing experience with a custom panel in the Gutenberg editor for managing referral details. No complex meta boxes.
 *   **REST API Enabled:** All referral code data, including custom meta fields, is exposed through the WordPress REST API for headless or custom applications.
 *   **Flexible Shortcode:** Use the `[referral_code_box]` shortcode to display beautifully formatted referral boxes anywhere on your site.
+*   **Single Post Template:** Includes a custom template for a clean, consistent look on single referral code pages.
 *   **Developer Friendly:** Built with standard WordPress functions and hooks, making it easy to customize and extend.
 
 == Installation ==
@@ -84,6 +85,9 @@ You can then copy the `rcp_referral_code_box_shortcode` function from `referral-
 3.  An example of the front-end display of the referral code box.
 
 == Changelog ==
+
+= 1.1.0 =
+*   Added a custom template for single 'referral-codes' posts.
 
 = 1.0.0 =
 *   Initial release.
