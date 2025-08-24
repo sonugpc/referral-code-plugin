@@ -596,61 +596,6 @@
     line-height: 1.5;
 }
 
-/* FAQ Section */
-.faq-section {
-    border: 1px solid var(--g-color);
-    background: var(--primary-light);
-}
-
-.faq-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.faq-item {
-    background: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-.faq-item:hover {
-    box-shadow: var(--shadow-sm);
-}
-
-.faq-question {
-    margin: 0;
-    padding: 16px;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.faq-question:hover {
-    background: #f8fafc;
-}
-
-.faq-question::after {
-    content: '';
-}
-
-.faq-answer {
-    padding: 0 16px 16px 16px;
-    max-height: none;
-    overflow: visible;
-}
-
-.faq-answer p {
-    margin: 0;
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
 
 /* Sidebar styles */
 .sidebar {
@@ -915,4 +860,36 @@ img {
         animation-iteration-count: 1 !important;
         transition-duration: 0.01ms !important;
     }
+}
+
+/* Styles for the copy to clipboard shortcode */
+.rcp-copy-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--border-color, #e2e8f0);
+    border-radius: var(--radius-md, 8px);
+    background-color: var(--card-background, #ffffff);
+    gap: 8px;
+}
+
+.rcp-referral-code {
+    font-weight: 600;
+    color: var(--text-primary, #0f172a);
+}
+
+.rcp-copy-icon {
+    cursor: pointer;
+    color: var(--text-secondary, #64748b);
+    transition: color 0.2s ease-in-out;
+}
+
+.rcp-copy-icon:hover {
+    color: var(--g-color, #6366f1);
+}
+
+.rcp-copy-icon svg {
+    width: 18px;
+    height: 18px;
 }

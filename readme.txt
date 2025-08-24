@@ -37,14 +37,26 @@ This plugin provides a complete solution for affiliate marketers and bloggers wh
 
 == Frequently Asked Questions ==
 
-= How do I use the shortcode? =
+= How do I use the shortcodes? =
 
-To display a referral code box, you need the ID of the referral code post. Find the ID by editing the post and looking at the URL (e.g., `post.php?post=123...`).
+The plugin provides three shortcodes for displaying referral codes. You can use either the post ID or the post slug to specify which referral code to display.
 
-Then, insert the shortcode into any post or page:
+**1. Referral Code Box:**
 `[referral_code_box id="123"]`
+or
+`[referral_code_box slug="your-post-slug"]`
 
 This will generate a responsive box with the App Logo, Title, Sign-up Bonus, Referral Code, and a link.
+
+**2. Plain Text Referral Code:**
+`[referral_code_text id="123"]`
+or
+`[referral_code_text slug="your-post-slug"]`
+
+**3. Referral Code with Copy Button:**
+`[referral_code_copy id="123"]`
+or
+`[referral_code_copy slug="your-post-slug"]`
 
 = How are the custom fields stored? =
 
@@ -85,6 +97,15 @@ You can then copy the `rcp_referral_code_box_shortcode` function from `referral-
 3.  An example of the front-end display of the referral code box.
 
 == Changelog ==
+
+= 1.3.0 =
+*   Added support for using post slugs in shortcodes (`[referral_code_box slug="..."]`).
+
+= 1.2.0 =
+*   Added `[referral_code_text]` shortcode to display the code in plain text.
+*   Added `[referral_code_copy]` shortcode to display the code with a copy-to-clipboard button.
+*   Added JavaScript for the copy functionality.
+*   Added styles for the new shortcodes.
 
 = 1.1.0 =
 *   Added a custom template for single 'referral-codes' posts.

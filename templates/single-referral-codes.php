@@ -25,7 +25,7 @@ $current_year = date('Y');
         <div class="breadcrumb">
             <a href="<?php echo home_url(); ?>">Home</a>
             <span class="breadcrumb-separator">></span>
-            <a href="<?php echo get_post_type_archive_link('referral_code'); ?>">Referral Codes</a>
+                       <a href="<?php echo get_post_type_archive_link('referral-codes'); ?>">Referral Codes</a>
             <span class="breadcrumb-separator">></span>
             <span class="breadcrumb-current"><?php the_title(); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Offer'; ?> <?php echo $current_year; ?></span>
         </div>
@@ -41,7 +41,15 @@ $current_year = date('Y');
                 
                 <div class="referral-info">
                     <h1><?php the_title(); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Offer'; ?> <?php echo $current_year; ?></h1>
-                    <div class="referral-category"><?php echo esc_html($category_name); ?></div>
+                    <div class="referral-category">
+                        <?php
+                        if ( ! empty( $categories ) ) {
+                            foreach ( $categories as $category ) {
+                                echo '<a href="' . esc_url( get_category_link( $category->term_id ) ) . '">' . esc_html( $category->name ) . '</a>';
+                            }
+                        }
+                        ?>
+                    </div>
                     
                     <div class="referral-rating">
                         <div class="rating-item">
@@ -443,13 +451,6 @@ if (isset($_POST['referral_code_submission']) && wp_verify_nonce($_POST['referra
         }
     };
     
-    // FAQ toggle functionality
-    function initFAQs() {
-        document.querySelectorAll('.faq-item').forEach(item => {
-            item.classList.add('open');
-        });
-    }
-    
     // Form enhancements
     function initForm() {
         const form = document.querySelector('.submit-form');
@@ -485,11 +486,9 @@ if (isset($_POST['referral_code_submission']) && wp_verify_nonce($_POST['referra
     // Initialize when DOM is ready
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', function() {
-            initFAQs();
             initForm();
         });
     } else {
-        initFAQs();
         initForm();
     }
 })();

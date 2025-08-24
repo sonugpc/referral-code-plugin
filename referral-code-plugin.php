@@ -58,10 +58,11 @@ function rcp_register_post_type() {
         'query_var'          => true,
         'rewrite'            => array( 'slug' => 'referral-code' ),
         'capability_type'    => 'post',
-        'has_archive'        => true,
+        'has_archive'        => 'referral-codes',
         'hierarchical'       => false,
         'menu_position'      => null,
         'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
+        'taxonomies'         => array( 'category' ),
         'show_in_rest'       => true, // This enables the REST API
     );
 
@@ -191,14 +192,29 @@ add_action( 'save_post', 'rcp_set_default_faqs_on_new_post', 10, 3 );
  */
 function rcp_referral_code_box_shortcode( $atts ) {
     $atts = shortcode_atts( array(
-        'id' => null,
+        'id'   => null,
+        'slug' => null,
     ), $atts, 'referral_code_box' );
 
-    if ( ! $atts['id'] ) {
-        return '';
+    $post = null;
+    if ( ! empty( $atts['id'] ) ) {
+        $post = get_post( $atts['id'] );
+    } elseif ( ! empty( $atts['slug'] ) ) {
+        $args = array(
+            'name'        => $atts['slug'],
+            'post_type'   => 'referral-codes',
+            'post_status' => 'publish',
+            'numberposts' => 1
+        );
+        $posts = get_posts($args);
+        if ( $posts ) {
+            $post = $posts[0];
+        }
     }
 
-    $post = get_post( $atts['id'] );
+    if ( ! $post ) {
+        return '';
+    }
 
     if ( ! $post || $post->post_type !== 'referral-codes' ) {
         return '';
@@ -362,4 +378,112 @@ function register_referral_sidebar() {
     ));
 }
 add_action('widgets_init', 'register_referral_sidebar');
+
+/**
+ * Shortcode to display a referral code in plain text.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string The referral code.
+ */
+function rcp_referral_code_text_shortcode( $atts ) {
+    $atts = shortcode_atts( array(
+        'id'   => null,
+        'slug' => null,
+    ), $atts, 'referral_code_text' );
+
+    $post = null;
+    if ( ! empty( $atts['id'] ) ) {
+        $post = get_post( $atts['id'] );
+    } elseif ( ! empty( $atts['slug'] ) ) {
+        $args = array(
+            'name'        => $atts['slug'],
+            'post_type'   => 'referral-codes',
+            'post_status' => 'publish',
+            'numberposts' => 1
+        );
+        $posts = get_posts($args);
+        if ( $posts ) {
+            $post = $posts[0];
+        }
+    }
+
+    if ( ! $post ) {
+        return '';
+    }
+
+    if ( ! $post || $post->post_type !== 'referral-codes' ) {
+        return '';
+    }
+
+    return esc_html( get_post_meta( $post->ID, 'referral_code', true ) );
+}
+add_shortcode( 'referral_code_text', 'rcp_referral_code_text_shortcode' );
+
+/**
+ * Shortcode to display a referral code with a copy button.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string HTML output for the referral code with a copy button.
+ */
+function rcp_referral_code_copy_shortcode( $atts ) {
+    $atts = shortcode_atts( array(
+        'id'   => null,
+        'slug' => null,
+    ), $atts, 'referral_code_copy' );
+
+    $post = null;
+    if ( ! empty( $atts['id'] ) ) {
+        $post = get_post( $atts['id'] );
+    } elseif ( ! empty( $atts['slug'] ) ) {
+        $args = array(
+            'name'        => $atts['slug'],
+            'post_type'   => 'referral-codes',
+            'post_status' => 'publish',
+            'numberposts' => 1
+        );
+        $posts = get_posts($args);
+        if ( $posts ) {
+            $post = $posts[0];
+        }
+    }
+
+    if ( ! $post ) {
+        return '';
+    }
+
+    if ( ! $post || $post->post_type !== 'referral-codes' ) {
+        return '';
+    }
+
+    $referral_code = get_post_meta( $post->ID, 'referral_code', true );
+
+    ob_start();
+    ?>
+    <div class="rcp-copy-wrapper">
+        <span class="rcp-referral-code"><?php echo esc_html( $referral_code ); ?></span>
+        <span class="rcp-copy-icon" data-clipboard-text="<?php echo esc_attr( $referral_code ); ?>" title="Copy to clipboard">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-copy"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+        </span>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+add_shortcode( 'referral_code_copy', 'rcp_referral_code_copy_shortcode' );
+
+/**
+ * Enqueue frontend scripts and styles for the copy shortcode.
+ */
+function rcp_enqueue_copy_assets() {
+    // Only enqueue if the shortcode is present.
+    if ( is_a( get_post(), 'WP_Post' ) && has_shortcode( get_post()->post_content, 'referral_code_copy' ) ) {
+        wp_enqueue_script(
+            'rcp-copy-to-clipboard',
+            plugins_url( 'js/copy-to-clipboard.js', __FILE__ ),
+            array(),
+            filemtime( plugin_dir_path( __FILE__ ) . 'js/copy-to-clipboard.js' ),
+            true
+        );
+    }
+}
+add_action( 'wp_enqueue_scripts', 'rcp_enqueue_copy_assets' );
 ?>
