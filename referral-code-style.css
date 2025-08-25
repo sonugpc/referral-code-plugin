@@ -377,7 +377,7 @@
 .referral-details-table th {
     background: rgba(99, 102, 241, 0.1);
     font-weight: 600;
-    color: var(--text-primary); /* Improved contrast */
+    color: #fff; /* Improved contrast */
     font-size: 0.8rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;
