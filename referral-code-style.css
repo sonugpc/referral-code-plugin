@@ -74,6 +74,7 @@
 }
 
 .referral-hero-content {
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 16px;
 }
@@ -861,34 +862,4 @@ img {
     }
 }
 
-/* Styles for the copy to clipboard shortcode */
-.rcp-copy-wrapper {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 12px;
-    border: 1px solid var(--border-color, #e2e8f0);
-    border-radius: var(--radius-md, 8px);
-    background-color: var(--card-background, #ffffff);
-    gap: 8px;
-}
-
-.rcp-referral-code {
-    font-weight: 600;
-    color: var(--text-primary, #0f172a);
-}
-
-.rcp-copy-icon {
-    cursor: pointer;
-    color: var(--text-secondary, #64748b);
-    transition: color 0.2s ease-in-out;
-}
-
-.rcp-copy-icon:hover {
-    color: var(--g-color, #6366f1);
-}
-
-.rcp-copy-icon svg {
-    width: 18px;
-    height: 18px;
-}
+/* Minimal style for copied state, if needed */

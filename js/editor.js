@@ -13,7 +13,7 @@
         }
 
         const meta = useSelect( ( select ) => select( 'core/editor' ).getEditedPostAttribute( 'meta' ) || {} );
-        const { referral_code, referral_link, signup_bonus, rcp_faqs } = meta;
+        const { referral_code, referral_link, signup_bonus, referral_rewards, rcp_faqs } = meta;
 
         const { editPost } = useDispatch( 'core/editor' );
 
@@ -21,22 +21,14 @@
             editPost( { meta: { ...meta, [key]: value } } );
         };
 
-        const handleFaqChange = ( index, field, value ) => {
-            const faqs = [ ...( rcp_faqs || [] ) ];
-            faqs[ index ] = { ...faqs[ index ], [ field ]: value };
-            setMetaValue( 'rcp_faqs', faqs );
-        };
-
-        const addFaq = () => {
-            const faqs = [ ...( rcp_faqs || [] ) ];
-            faqs.push( { question: '', answer: '' } );
-            setMetaValue( 'rcp_faqs', faqs );
-        };
-
-        const removeFaq = ( index ) => {
-            const faqs = [ ...( rcp_faqs || [] ) ];
-            faqs.splice( index, 1 );
-            setMetaValue( 'rcp_faqs', faqs );
+        const handleFaqChange = ( value ) => {
+            try {
+                const faqs = JSON.parse( value );
+                setMetaValue( 'rcp_faqs', faqs );
+            } catch ( e ) {
+                // For now, just log the error. A more robust solution could show an error in the UI.
+                console.error( "Invalid JSON:", e );
+            }
         };
 
         return createElement(
@@ -71,44 +63,25 @@
                 }
             ),
             createElement(
+                TextControl,
+                {
+                    label: __( 'Referral Rewards', 'referral-code-plugin' ),
+                    value: referral_rewards,
+                    onChange: ( value ) => setMetaValue( 'referral_rewards', value ),
+                }
+            ),
+            createElement(
                 PanelBody,
                 {
-                    title: __( 'FAQs', 'referral-code-plugin' ),
+                    title: __( 'FAQs (JSON)', 'referral-code-plugin' ),
                     initialOpen: true,
                 },
-                ( rcp_faqs || [] ).map( ( faq, index ) =>
-                    createElement(
-                        Fragment,
-                        { key: index },
-                        createElement( TextControl, {
-                            label: __( 'Question', 'referral-code-plugin' ),
-                            value: faq.question,
-                            onChange: ( value ) => handleFaqChange( index, 'question', value ),
-                        } ),
-                        createElement( TextareaControl, {
-                            label: __( 'Answer', 'referral-code-plugin' ),
-                            value: faq.answer,
-                            onChange: ( value ) => handleFaqChange( index, 'answer', value ),
-                        } ),
-                        createElement(
-                            Button,
-                            {
-                                isLink: true,
-                                isDestructive: true,
-                                onClick: () => removeFaq( index ),
-                            },
-                            __( 'Remove FAQ', 'referral-code-plugin' )
-                        )
-                    )
-                ),
-                createElement(
-                    Button,
-                    {
-                        isPrimary: true,
-                        onClick: addFaq,
-                    },
-                    __( 'Add FAQ', 'referral-code-plugin' )
-                )
+                createElement( TextareaControl, {
+                    label: __( 'Enter FAQs in JSON format', 'referral-code-plugin' ),
+                    value: JSON.stringify( rcp_faqs || [], null, 2 ),
+                    onChange: handleFaqChange,
+                    rows: 15,
+                } )
             )
         );
     };

@@ -10,6 +10,7 @@ get_header();
 $referral_code = get_post_meta( $post->ID, 'referral_code', true );
 $referral_link = get_post_meta( $post->ID, 'referral_link', true );
 $signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
+$referral_rewards = get_post_meta( $post->ID, 'referral_rewards', true );
 $app_logo = get_the_post_thumbnail_url( $post->ID, 'thumbnail' );
 $rcp_faqs = get_post_meta( $post->ID, 'rcp_faqs', true );
 $categories = get_the_category();
@@ -124,6 +125,13 @@ $current_year = date('Y');
                                 <tr>
                                     <td>Signup Bonus</td>
                                     <td><strong style="color: var(--secondary-color);"><?php echo esc_html($signup_bonus); ?></strong></td>
+                                </tr>
+                                <?php endif; ?>
+
+                                <?php if ($referral_rewards): ?>
+                                <tr>
+                                    <td>Referral Rewards</td>
+                                    <td><strong style="color: var(--secondary-color);"><?php echo esc_html($referral_rewards); ?></strong></td>
                                 </tr>
                                 <?php endif; ?>
                                 

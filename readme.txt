@@ -21,6 +21,7 @@ This plugin provides a complete solution for affiliate marketers and bloggers wh
     *   **Referral Code:** The actual code to be shared.
     *   **Referral Link:** The URL for users to click.
     *   **Sign-up Bonus:** Highlight the incentive for users.
+    *   **Referral Rewards:** Detail the rewards for the referrer.
 *   **Gutenberg Integration:** A seamless editing experience with a custom panel in the Gutenberg editor for managing referral details. No complex meta boxes.
 *   **REST API Enabled:** All referral code data, including custom meta fields, is exposed through the WordPress REST API for headless or custom applications.
 *   **Flexible Shortcode:** Use the `[referral_code_box]` shortcode to display beautifully formatted referral boxes anywhere on your site.
@@ -58,12 +59,23 @@ or
 or
 `[referral_code_copy slug="your-post-slug"]`
 
+**4. Plain Text Referral Link:**
+`[referral_link_text id="123"]`
+or
+`[referral_link_text slug="your-post-slug"]`
+
+**5. Referral Link with Copy Button:**
+`[referral_link_copy id="123"]`
+or
+`[referral_link_copy slug="your-post-slug"]`
+
 = How are the custom fields stored? =
 
 The custom fields are stored as post meta data with the following keys:
 *   `referral_code`
 *   `referral_link`
 *   `signup_bonus`
+*   `referral_rewards`
 
 == For Developers ==
 
@@ -97,6 +109,10 @@ You can then copy the `rcp_referral_code_box_shortcode` function from `referral-
 3.  An example of the front-end display of the referral code box.
 
 == Changelog ==
+
+= 1.4.0 =
+*   Added `referral_rewards` meta field.
+*   Added `[referral_link_text]` and `[referral_link_copy]` shortcodes.
 
 = 1.3.0 =
 *   Added support for using post slugs in shortcodes (`[referral_code_box slug="..."]`).
