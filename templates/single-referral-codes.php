@@ -89,7 +89,7 @@ $current_year = date('Y');
             </div>
         </header><!-- .entry-header -->
 
-        <div class="entry-content">
+        <div class="">
             <!-- Main Content with Sidebar -->
             <div class="container-with-sidebar">
                 <div class="main-content">
