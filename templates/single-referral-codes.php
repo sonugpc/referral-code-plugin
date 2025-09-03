@@ -29,7 +29,7 @@ $current_year = date('Y');
                     <span class="breadcrumb-separator">></span>
                     <a href="<?php echo get_post_type_archive_link('referral-codes'); ?>">Referral Codes</a>
                     <span class="breadcrumb-separator">></span>
-                    <span class="breadcrumb-current"><?php the_title(); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Offer'; ?> <?php echo $current_year; ?></span>
+                    <span class="breadcrumb-current"><?php the_title(); ?></span>
                 </div>
             </div>
             
@@ -42,7 +42,7 @@ $current_year = date('Y');
                         <?php endif; ?>
                         
                         <div class="referral-info">
-                            <h1 class="entry-title"><?php the_title(); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Offer'; ?> <?php echo $current_year; ?></h1>
+                            <h1 class="entry-title"><?php the_title(); ?></h1>
                             <div class="referral-category">
                                 <?php
                                 if ( ! empty( $categories ) ) {

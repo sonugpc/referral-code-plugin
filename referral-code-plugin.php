@@ -110,6 +110,15 @@ function rcp_register_meta_fields() {
         }
     ) );
 
+    register_post_meta( 'referral-codes', 'app_name', array(
+        'show_in_rest' => true,
+        'single'       => true,
+        'type'         => 'string',
+        'auth_callback' => function() {
+            return current_user_can( 'edit_posts' );
+        }
+    ) );
+
     register_post_meta( 'referral-codes', 'rcp_faqs', array(
         'show_in_rest' => array(
             'schema' => array(
@@ -587,4 +596,23 @@ function rcp_enqueue_copy_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'rcp_enqueue_copy_assets' );
+
+/**
+ * Modify the title for the 'referral-codes' post type.
+ *
+ * @param string $title The original title.
+ * @param int    $id    The post ID.
+ * @return string The modified title.
+ */
+function rcp_custom_title( $title, $id = null ) {
+    if ( get_post_type( $id ) == 'referral-codes' ) {
+        $app_name = get_post_meta( $id, 'app_name', true );
+        $referral_code = get_post_meta( $id, 'referral_code', true );
+        if ( $app_name && $referral_code ) {
+            return '(' . esc_html( $referral_code ) . ') ' . esc_html( $app_name ) . ' Referral Code ' . date( 'Y' ) . ' : ' . $title;
+        }
+    }
+    return $title;
+}
+add_filter( 'the_title', 'rcp_custom_title', 10, 2 );
 ?>

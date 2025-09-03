@@ -13,7 +13,7 @@
         }
 
         const meta = useSelect( ( select ) => select( 'core/editor' ).getEditedPostAttribute( 'meta' ) || {} );
-        const { referral_code, referral_link, signup_bonus, referral_rewards, rcp_faqs } = meta;
+        const { referral_code, referral_link, signup_bonus, referral_rewards, app_name, rcp_faqs } = meta;
 
         const { editPost } = useDispatch( 'core/editor' );
 
@@ -68,6 +68,14 @@
                     label: __( 'Referral Rewards', 'referral-code-plugin' ),
                     value: referral_rewards,
                     onChange: ( value ) => setMetaValue( 'referral_rewards', value ),
+                }
+            ),
+            createElement(
+                TextControl,
+                {
+                    label: __( 'App Name', 'referral-code-plugin' ),
+                    value: app_name,
+                    onChange: ( value ) => setMetaValue( 'app_name', value ),
                 }
             ),
             createElement(
