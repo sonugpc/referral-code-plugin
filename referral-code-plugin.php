@@ -6,8 +6,8 @@
  * Version:           1.0.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
- * Author:            Sonu Sourav
- * Author URI:        https://author.example.com/
+ * Author:            Sonu Gupta
+ * Author URI:        https://bigtricks.in/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       referral-code-plugin
@@ -182,18 +182,27 @@ function rcp_set_default_faqs_on_new_post( $post_id, $post, $update ) {
         return;
     }
 
+    $app_name = get_post_meta( $post_id, 'app_name', true );
+    if ( ! $app_name ) {
+        $app_name = $post->post_title;
+    }
+
     $default_faqs = array(
         array(
-            'question' => 'What is the {{post_title}} Referral Program?',
-            'answer'   => 'The referral code for {{post_title}} is <strong>{{referral_code}}</strong>. When you use this code during signup, you will receive a bonus of <strong>{{signup_bonus}}</strong>. Alternatively, you can use the direct referral link: {{referral_link}}.',
+            'question' => 'What is the ' . $app_name . ' Referral Program?',
+            'answer'   => 'The referral code for ' . $app_name . ' is <strong>{{referral_code}}</strong>. When you use this code during signup, you will receive a bonus of <strong>{{signup_bonus}}</strong>. Alternatively, you can use the direct referral link: {{referral_link}}.',
         ),
         array(
             'question' => 'When will I receive my signup bonus?',
-            'answer'   => 'Most referral bonuses are processed instantly or within 24-48 hours after meeting the minimum requirements. Check the specific terms and conditions for {{post_title}} for exact timing.',
+            'answer'   => 'Most referral bonuses are processed instantly or within 24-48 hours after meeting the minimum requirements. Check the specific terms and conditions for ' . $app_name . ' for exact timing.',
         ),
         array(
             'question' => 'Can I use multiple referral codes?',
-            'answer'   => 'No, typically only one referral code can be used per account for {{post_title}}. Make sure to use the best available code during your initial signup.',
+            'answer'   => 'No, typically only one referral code can be used per account for ' . $app_name . '. Make sure to use the best available code during your initial signup.',
+        ),
+        array(
+            'question' => 'What is the Signup Bonus If I use Referral Code For ' . $app_name . '?',
+            'answer'   => 'You will get <strong>{{signup_bonus}}</strong> as a signup bonus.',
         ),
     );
 
@@ -596,23 +605,4 @@ function rcp_enqueue_copy_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'rcp_enqueue_copy_assets' );
-
-/**
- * Modify the title for the 'referral-codes' post type.
- *
- * @param string $title The original title.
- * @param int    $id    The post ID.
- * @return string The modified title.
- */
-function rcp_custom_title( $title, $id = null ) {
-    if ( get_post_type( $id ) == 'referral-codes' ) {
-        $app_name = get_post_meta( $id, 'app_name', true );
-        $referral_code = get_post_meta( $id, 'referral_code', true );
-        if ( $app_name && $referral_code ) {
-            return '(' . esc_html( $referral_code ) . ') ' . esc_html( $app_name ) . ' Referral Code ' . date( 'Y' ) . ' : ' . $title;
-        }
-    }
-    return $title;
-}
-add_filter( 'the_title', 'rcp_custom_title', 10, 2 );
 ?>
