@@ -11,6 +11,7 @@ $referral_code = get_post_meta( $post->ID, 'referral_code', true );
 $referral_link = get_post_meta( $post->ID, 'referral_link', true );
 $signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
 $referral_rewards = get_post_meta( $post->ID, 'referral_rewards', true );
+$app_name = get_post_meta( $post->ID, 'app_name', true );
 $app_logo = get_the_post_thumbnail_url( $post->ID, 'thumbnail' );
 $rcp_faqs = get_post_meta( $post->ID, 'rcp_faqs', true );
 $categories = get_the_category();
@@ -38,7 +39,7 @@ $current_year = date('Y');
                 <div class="referral-hero-content">
                     <div class="referral-hero-card">
                         <?php if ($app_logo): ?>
-                            <img src="<?php echo esc_url($app_logo); ?>" alt="<?php the_title(); ?>" class="referral-logo" width="150" height="150">
+                            <img src="<?php echo esc_url($app_logo); ?>" alt="<?php echo esc_attr($app_name); ?>" class="referral-logo" width="150" height="150">
                         <?php endif; ?>
                         
                         <div class="referral-info">
@@ -77,7 +78,7 @@ $current_year = date('Y');
                             
                             <?php if ($referral_link): ?>
                                 <a href="<?php echo esc_url($referral_link); ?>" target="_blank" class="primary-action-btn" rel="noopener">
-                                    Visit <?php the_title(); ?>
+                                    Visit <?php echo esc_html($app_name); ?>
                                 </a>
                             <?php else: ?>
                                 <button class="primary-action-btn" onclick="scrollToSection('referral-details')">
@@ -98,12 +99,12 @@ $current_year = date('Y');
                     <!-- Referral Details Section with Table -->
                     <?php if ($referral_code || $referral_link || $signup_bonus): ?>
                     <section class="card-section referral-details-section" id="referral-details">
-                        <h2 class="section-header"><?php the_title() ?> <?php echo ($referral_code) ? 'Referral Details' : 'Referral Link Details'; ?></h2>
+                        <h2 class="section-header"><?php echo esc_html($app_name); ?> <?php echo ($referral_code) ? 'Referral Details' : 'Referral Link Details'; ?></h2>
                         <table class="referral-details-table">
                             <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th><?php the_title() ?></th>
+                                    <th><?php echo esc_html($app_name); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -146,7 +147,7 @@ $current_year = date('Y');
                     
                     <!-- Content Section -->
                     <section class="card-section entry-content clearfix">
-                        <h2 class="section-header">About <?php the_title(); ?> Referral Program</h2>
+                        <h2 class="section-header">About <?php echo esc_html($app_name); ?> Referral Program</h2>
                         <div class="content-area">
                             <?php the_content(); ?>
                         </div>
@@ -300,12 +301,12 @@ $current_year = date('Y');
                                 foreach ( $rcp_faqs as $faq ) {
                                     $question = str_replace(
                                         array( '{{post_title}}', '{{referral_code}}' ),
-                                        array( get_the_title(), $referral_code ),
+                                        array( $app_name, $referral_code ),
                                         $faq['question']
                                     );
                                     $answer = str_replace(
                                         array( '{{post_title}}', '{{referral_code}}', '{{signup_bonus}}', '{{referral_link}}' ),
-                                        array( get_the_title(), $referral_code, $signup_bonus, $referral_link ),
+                                        array( $app_name, $referral_code, $signup_bonus, $referral_link ),
                                         $faq['answer']
                                     );
                                     ?>
