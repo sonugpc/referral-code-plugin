@@ -121,7 +121,7 @@
     margin: 0 0 12px 0;
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--g-color);
+    color: var(--text-primary);
     line-height: 1.2;
 }
 
@@ -393,6 +393,13 @@
 .referral-details-table tr:last-child td {
     border-bottom: none;
 }
+
+.referral-details-table td a {
+   color: blue;
+   cursor: pointer;
+}
+
+
 
 
 
@@ -808,18 +815,23 @@ img {
 
 @media (max-width: 480px) {
     .referral-code-display {
-        flex-direction: column;
+        flex-direction: row;
         gap: 10px;
-        text-align: center;
+        text-align: left;
     }
     
     .referral-code-display span {
         word-break: break-all;
         font-size: 0.9rem;
+        flex-grow: 1;
+        text-align: center;
+        border: 2px solid var(--g-color);
+        padding: 8px;
+        border-radius: var(--radius-md);
     }
     
     .copy-btn {
-        width: 100%;
+        width: auto;
         justify-content: center;
     }
     

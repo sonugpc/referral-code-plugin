@@ -12,6 +12,9 @@ $referral_link = get_post_meta( $post->ID, 'referral_link', true );
 $signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
 $referral_rewards = get_post_meta( $post->ID, 'referral_rewards', true );
 $app_name = get_post_meta( $post->ID, 'app_name', true );
+if ( ! $app_name ) {
+    $app_name = get_the_title();
+}
 $app_logo = get_the_post_thumbnail_url( $post->ID, 'thumbnail' );
 $rcp_faqs = get_post_meta( $post->ID, 'rcp_faqs', true );
 $categories = get_the_category();
@@ -30,7 +33,7 @@ $current_year = date('Y');
                     <span class="breadcrumb-separator">></span>
                     <a href="<?php echo get_post_type_archive_link('referral-codes'); ?>">Referral Codes</a>
                     <span class="breadcrumb-separator">></span>
-                    <span class="breadcrumb-current"><?php the_title(); ?></span>
+                    <span class="breadcrumb-current"><?php echo esc_html($app_name); ?></span>
                 </div>
             </div>
             

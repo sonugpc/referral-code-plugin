@@ -133,6 +133,7 @@ function rcp_register_meta_fields() {
                             'type' => 'string',
                         ),
                     ),
+                    'additionalProperties' => true,
                 ),
             ),
         ),
@@ -158,6 +159,24 @@ function rcp_enqueue_block_editor_assets() {
     );
 }
 add_action( 'enqueue_block_editor_assets', 'rcp_enqueue_block_editor_assets' );
+
+function rcp_add_meta_box() {
+    add_meta_box(
+        'rcp_faq_meta_box',
+        'FAQs',
+        'rcp_faq_meta_box_callback',
+        'referral-codes',
+        'normal',
+        'high'
+    );
+}
+add_action( 'add_meta_boxes', 'rcp_add_meta_box' );
+
+function rcp_faq_meta_box_callback( $post ) {
+    ?>
+    <div id="rcp-faq-editor"></div>
+    <?php
+}
 
 /**
  * Set default FAQs when a new 'referral-codes' post is created.
