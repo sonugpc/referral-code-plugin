@@ -273,30 +273,118 @@ function rcp_referral_code_box_shortcode( $atts ) {
 
     ob_start();
     ?>
-    <div class="wp-block-media-text alignwide is-stacked-on-mobile">
-        <figure class="wp-block-media-text__media">
-            <img src="<?php echo esc_url( $app_logo ); ?>" alt="<?php echo esc_attr( $post->post_title ); ?> Logo">
-        </figure>
-        <div class="wp-block-media-text__content">
-            <h3 class="wp-block-heading"><?php echo esc_html( $post->post_title ); ?></h3>
-            <?php if ( ! empty( $signup_bonus ) ) : ?>
-                <p><strong><?php esc_html_e( 'Sign-up Bonus:', 'referral-code-plugin' ); ?></strong> <?php echo esc_html( $signup_bonus ); ?></p>
+    <div class="referral-code-box">
+        <div class="referral-code-box-inner">
+            <?php if ( $app_logo ) : ?>
+            <div class="referral-code-logo">
+                <img src="<?php echo esc_url( $app_logo ); ?>" alt="<?php echo esc_attr( $post->post_title ); ?> Logo">
+            </div>
             <?php endif; ?>
-            <div class="wp-block-columns">
-                <div class="wp-block-column">
-                    <div class="wp-block-buttons is-content-justification-center">
-                        <div class="wp-block-button">
-                            <a class="wp-block-button__link" href="<?php echo esc_url( $referral_link ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Get the Deal', 'referral-code-plugin' ); ?></a>
-                        </div>
-                    </div>
+            
+            <div class="referral-code-content">
+                <h3 class="referral-code-title"><?php echo esc_html( $post->post_title ); ?></h3>
+                
+                <?php if ( ! empty( $signup_bonus ) ) : ?>
+                <div class="referral-code-bonus">
+                    <strong><?php esc_html_e( 'Sign-up Bonus:', 'referral-code-plugin' ); ?></strong> 
+                    <?php echo esc_html( $signup_bonus ); ?>
                 </div>
-                <div class="wp-block-column">
-                     <p class="has-text-align-center"><strong><?php esc_html_e( 'Referral Code:', 'referral-code-plugin' ); ?></strong></p>
-                     <p class="has-text-align-center has-background has-text-white-color" style="padding:10px;"><?php echo esc_html( $referral_code ); ?></p>
+                <?php endif; ?>
+                
+                <?php if ( ! empty( $referral_code ) ) : ?>
+                <div class="referral-code-display">
+                    <strong><?php esc_html_e( 'Referral Code:', 'referral-code-plugin' ); ?></strong>
+                    <span class="referral-code-value"><?php echo esc_html( $referral_code ); ?></span>
                 </div>
+                <?php endif; ?>
+                
+                <?php if ( ! empty( $referral_link ) ) : ?>
+                <div class="referral-code-action">
+                    <a href="<?php echo esc_url( $referral_link ); ?>" target="_blank" rel="noopener noreferrer" class="referral-code-button">
+                        <?php esc_html_e( 'Get the Deal', 'referral-code-plugin' ); ?>
+                    </a>
+                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
+    
+    <style>
+    .referral-code-box {
+        margin: 20px 0;
+        border: 1px solid #eee;
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    
+    .referral-code-box-inner {
+        display: flex;
+        align-items: flex-start;
+        padding: 15px;
+    }
+    
+    .referral-code-logo {
+        margin-right: 20px;
+        flex-shrink: 0;
+    }
+    
+    .referral-code-logo img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    
+    .referral-code-content {
+        flex-grow: 1;
+    }
+    
+    .referral-code-title {
+        margin-top: 0;
+        margin-bottom: 10px;
+    }
+    
+    .referral-code-bonus {
+        margin-bottom: 10px;
+    }
+    
+    .referral-code-display {
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 3px;
+    }
+    
+    .referral-code-value {
+        font-family: monospace;
+        margin-left: 5px;
+        font-weight: bold;
+    }
+    
+    .referral-code-action {
+        margin-top: 15px;
+    }
+    
+    .referral-code-button {
+        display: inline-block;
+        padding: 8px 16px;
+        background-color: #f0f0f0;
+        color: #333;
+        text-decoration: none;
+        border-radius: 3px;
+    }
+    
+    @media (max-width: 768px) {
+        .referral-code-box-inner {
+            flex-direction: column;
+        }
+        
+        .referral-code-logo {
+            margin-right: 0;
+            margin-bottom: 15px;
+        }
+    }
+    </style>
     <?php
     return ob_get_clean();
 }
@@ -320,10 +408,27 @@ function rcp_load_single_template( $template ) {
 add_filter( 'single_template', 'rcp_load_single_template' );
 
 /**
+ * Load a custom template for 'referral-codes' archive.
+ *
+ * @param string $template The path of the template to include.
+ * @return string The path of the template to include.
+ */
+function rcp_load_archive_template( $template ) {
+    if ( is_post_type_archive( 'referral-codes' ) ) {
+        $plugin_template = plugin_dir_path( __FILE__ ) . 'templates/archive-referral-codes.php';
+        if ( file_exists( $plugin_template ) ) {
+            return $plugin_template;
+        }
+    }
+    return $template;
+}
+add_filter( 'archive_template', 'rcp_load_archive_template' );
+
+/**
  * Enqueue frontend scripts and styles.
  */
 function rcp_enqueue_frontend_assets() {
-    if ( is_singular( 'referral-codes' ) ) {
+    if ( is_singular( 'referral-codes' ) || is_post_type_archive( 'referral-codes' ) ) {
         wp_enqueue_style(
             'referral-code-style',
             plugins_url( 'referral-code-style.css', __FILE__ ),

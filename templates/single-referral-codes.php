@@ -316,8 +316,8 @@ $current_year = date('Y');
                                     <div class="faq-item" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
                                         <h3 class="faq-question" itemprop="name"><?php echo esc_html( $question ); ?></h3>
                                         <div class="faq-answer" itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer">
-                                            <div itemprop="text">
-                                                <p><?php echo wp_kses_post( $answer ); ?></p>
+                                            <div class="faq-answer-content" itemprop="text">
+                                                <?php echo wp_kses_post( $answer ); ?>
                                             </div>
                                         </div>
                                     </div>
