@@ -3,7 +3,7 @@ Contributors: sonusourav
 Tags: referral code, custom post type, shortcode, gutenberg, rest api, affiliate
 Requires at least: 5.2
 Tested up to: 6.0
-Stable tag: 1.0.0
+Stable tag: 1.5.0
 Requires PHP: 7.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -18,14 +18,17 @@ This plugin provides a complete solution for affiliate marketers and bloggers wh
 
 *   **Dedicated Custom Post Type:** Manage all your referral codes in one place with a 'Referral Codes' section in the WordPress admin.
 *   **Custom Fields for Details:**
+    *   **App Name:** The name of the application/service.
     *   **Referral Code:** The actual code to be shared.
     *   **Referral Link:** The URL for users to click.
     *   **Sign-up Bonus:** Highlight the incentive for users.
     *   **Referral Rewards:** Detail the rewards for the referrer.
+*   **Dynamic FAQ Generation:** Automatically generates comprehensive FAQs using app name and referral details, with templated variables for dynamic content.
 *   **Gutenberg Integration:** A seamless editing experience with a custom panel in the Gutenberg editor for managing referral details. No complex meta boxes.
 *   **REST API Enabled:** All referral code data, including custom meta fields, is exposed through the WordPress REST API for headless or custom applications.
-*   **Flexible Shortcode:** Use the `[referral_code_box]` shortcode to display beautifully formatted referral boxes anywhere on your site.
-*   **Single Post Template:** Includes a custom template for a clean, consistent look on single referral code pages.
+*   **Flexible Shortcodes:** Use various shortcodes to display referral codes in different formats anywhere on your site.
+*   **Single Post Template:** Includes a custom template for a clean, consistent look on single referral code pages with sidebar support.
+*   **Performance Optimized:** Deferred CSS/JS loading, comment caching, and efficient asset management for excellent Google PageSpeed scores.
 *   **Developer Friendly:** Built with standard WordPress functions and hooks, making it easy to customize and extend.
 
 == Installation ==
@@ -40,7 +43,7 @@ This plugin provides a complete solution for affiliate marketers and bloggers wh
 
 = How do I use the shortcodes? =
 
-The plugin provides three shortcodes for displaying referral codes. You can use either the post ID or the post slug to specify which referral code to display.
+The plugin provides multiple shortcodes for displaying referral codes in various formats. You can use either the post ID or the post slug to specify which referral code to display.
 
 **1. Referral Code Box:**
 `[referral_code_box id="123"]`
@@ -69,13 +72,59 @@ or
 or
 `[referral_link_copy slug="your-post-slug"]`
 
+**6. Referral Codes Grid (Archive):**
+`[referral_codes_grid posts_per_page="12" loadmore="true" category="slug" columns="3"]`
+
+This creates a responsive grid of referral code cards with AJAX load more functionality.
+
+**Parameters:**
+* `posts_per_page`: Number of posts to display initially (default: 12)
+* `loadmore`: Enable/disable the load more button ("true" or "false", default: "true")
+* `category`: Filter by category ID or slug (default: empty for all categories)
+* `columns`: CSS Grid columns reference (default: 3)
+
+**Examples:**
+```
+[referral_codes_grid]
+[referral_codes_grid posts_per_page="8" loadmore="false"]
+[referral_codes_grid category="mobile-apps"]
+[referral_codes_grid posts_per_page="6" category="finance" loadmore="true"]
+```
+
 = How are the custom fields stored? =
 
 The custom fields are stored as post meta data with the following keys:
+*   `app_name`
 *   `referral_code`
 *   `referral_link`
 *   `signup_bonus`
 *   `referral_rewards`
+
+= How does the FAQ system work? =
+
+The plugin automatically generates comprehensive FAQs for each referral code post using templated variables. The FAQs are stored in the `rcp_faqs` meta field and use the following variables for dynamic content:
+
+*   `{{app_name}}` - The application/service name
+*   `{{referral_code}}` - The referral code
+*   `{{referral_link}}` - The referral URL
+*   `{{signup_bonus}}` - The signup bonus details
+*   `{{referral_rewards}}` - The referral rewards information
+
+The FAQ generation prioritizes the app_name meta field over the post title and avoids using "Auto Draft" in the content.
+
+= What sidebar is used on single referral code posts? =
+
+Single referral code posts use the 'referral-sidebar' which is registered by the plugin. You can add widgets to this sidebar in WordPress admin under **Appearance > Widgets > Referral Code Sidebar**.
+
+= How is performance optimized for Google PageSpeed? =
+
+The plugin includes several performance optimizations:
+
+*   **Deferred CSS Loading:** Non-critical CSS is loaded asynchronously to prevent render-blocking
+*   **JavaScript Optimization:** Scripts are loaded efficiently with proper dependencies
+*   **Comment Caching:** User comments are cached for 1 hour to reduce database queries
+*   **Efficient Asset Management:** CSS and JS files are conditionally loaded only where needed
+*   **Optimized Templates:** Clean, semantic HTML with proper schema markup
 
 == For Developers ==
 
@@ -109,6 +158,27 @@ You can then copy the `rcp_referral_code_box_shortcode` function from `referral-
 3.  An example of the front-end display of the referral code box.
 
 == Changelog ==
+
+= 1.6.0 =
+*   Fixed "Auto Draft" issue in FAQ generation - now properly uses app_name from meta fields
+*   Enhanced FAQ system with templated variables ({{app_name}}, {{referral_code}}, {{signup_bonus}}, {{referral_link}}, {{referral_rewards}})
+*   Added comprehensive default FAQ questions covering all meta fields
+*   Added 'referral-sidebar' registration for single post pages
+*   Improved performance optimizations for Google PageSpeed:
+    - Deferred CSS loading to prevent render-blocking
+    - Efficient JavaScript loading and dependencies
+    - Comment caching system (1-hour cache)
+    - Conditional asset loading
+*   Updated documentation with FAQ system details and performance optimizations
+
+= 1.5.0 =
+*   Added `[referral_codes_grid]` shortcode with AJAX load more functionality
+*   Added category filtering support for the grid shortcode
+*   Added customizable parameters: posts_per_page, loadmore, category, columns
+*   Improved editor interface with shortcode help text below each field
+*   Enhanced table link display to show "Visit [app name]" instead of full URL
+*   Added compact sharing section after referral details table
+*   Updated archive template to use the new grid shortcode
 
 = 1.4.0 =
 *   Added `referral_rewards` meta field.

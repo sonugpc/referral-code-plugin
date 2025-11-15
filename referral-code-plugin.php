@@ -62,7 +62,7 @@ function rcp_register_post_type() {
         'hierarchical'       => false,
         'menu_position'      => null,
         'supports'           => array( 'title', 'editor', 'thumbnail', 'custom-fields' ),
-        'taxonomies'         => array( 'category' ),
+        'taxonomies'         => array( 'category', 'store' ),
         'show_in_rest'       => true, // This enables the REST API
     );
 
@@ -204,24 +204,43 @@ function rcp_set_default_faqs_on_new_post( $post_id, $post, $update ) {
     $app_name = get_post_meta( $post_id, 'app_name', true );
     if ( ! $app_name ) {
         $app_name = $post->post_title;
+        if ( empty( $app_name ) || $app_name === 'Auto Draft' ) {
+            $app_name = 'the Referral Program';
+        }
     }
 
     $default_faqs = array(
         array(
-            'question' => 'What is the ' . $app_name . ' Referral Program?',
-            'answer'   => 'The referral code for ' . $app_name . ' is <strong>{{referral_code}}</strong>. When you use this code during signup, you will receive a bonus of <strong>{{signup_bonus}}</strong>. Alternatively, you can use the direct referral link: {{referral_link}}.',
+            'question' => 'What is the {{app_name}} Referral Program?',
+            'answer'   => 'The referral code for {{app_name}} is <strong>{{referral_code}}</strong>. When you use this code during signup, you will receive a bonus of <strong>{{signup_bonus}}</strong>. Alternatively, you can use the direct referral link: {{referral_link}}.',
         ),
         array(
-            'question' => 'When will I receive my signup bonus?',
-            'answer'   => 'Most referral bonuses are processed instantly or within 24-48 hours after meeting the minimum requirements. Check the specific terms and conditions for ' . $app_name . ' for exact timing.',
+            'question' => 'What is the {{app_name}} Referral Code?',
+            'answer'   => 'The referral code for {{app_name}} is <strong>{{referral_code}}</strong>.',
         ),
         array(
-            'question' => 'Can I use multiple referral codes?',
-            'answer'   => 'No, typically only one referral code can be used per account for ' . $app_name . '. Make sure to use the best available code during your initial signup.',
+            'question' => 'What is the {{app_name}} Referral Link?',
+            'answer'   => 'You can use the direct referral link for {{app_name}}: {{referral_link}}.',
         ),
         array(
-            'question' => 'What is the Signup Bonus If I use Referral Code For ' . $app_name . '?',
-            'answer'   => 'You will get <strong>{{signup_bonus}}</strong> as a signup bonus.',
+            'question' => 'What is the Signup Bonus for {{app_name}}?',
+            'answer'   => 'You will receive <strong>{{signup_bonus}}</strong> as a signup bonus when you use the referral code or link for {{app_name}}.',
+        ),
+        array(
+            'question' => 'What are the Referral Rewards for {{app_name}}?',
+            'answer'   => 'The referral rewards for {{app_name}} include: {{referral_rewards}}.',
+        ),
+        array(
+            'question' => 'How do I use the {{app_name}} Referral Code?',
+            'answer'   => 'To use the {{app_name}} referral code, enter <strong>{{referral_code}}</strong> during signup or use the referral link: {{referral_link}}. You will receive {{signup_bonus}} as a bonus.',
+        ),
+        array(
+            'question' => 'When will I receive my {{app_name}} signup bonus?',
+            'answer'   => 'Most referral bonuses are processed instantly or within 24-48 hours after meeting the minimum requirements. Check the specific terms and conditions for {{app_name}} for exact timing.',
+        ),
+        array(
+            'question' => 'Can I use multiple referral codes for {{app_name}}?',
+            'answer'   => 'No, typically only one referral code can be used per account for {{app_name}}. Make sure to use the best available code during your initial signup.',
         ),
     );
 
@@ -283,7 +302,18 @@ function rcp_referral_code_box_shortcode( $atts ) {
             
             <div class="referral-code-content">
                 <h3 class="referral-code-title"><?php echo esc_html( $post->post_title ); ?></h3>
-                
+
+                <?php
+                $categories = get_the_category( $post->ID );
+                if ( ! empty( $categories ) ) :
+                ?>
+                <div class="referral-code-categories">
+                    <?php foreach ( $categories as $category ) : ?>
+                        <span class="referral-code-category"><?php echo esc_html( $category->name ); ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
+
                 <?php if ( ! empty( $signup_bonus ) ) : ?>
                 <div class="referral-code-bonus">
                     <strong><?php esc_html_e( 'Sign-up Bonus:', 'referral-code-plugin' ); ?></strong> 
@@ -315,56 +345,83 @@ function rcp_referral_code_box_shortcode( $atts ) {
         border: 1px solid #eee;
         border-radius: 5px;
         overflow: hidden;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    
+
     .referral-code-box-inner {
         display: flex;
         align-items: flex-start;
         padding: 15px;
     }
-    
+
     .referral-code-logo {
         margin-right: 20px;
         flex-shrink: 0;
     }
-    
+
     .referral-code-logo img {
         width: 80px;
         height: 80px;
         object-fit: cover;
         border-radius: 5px;
     }
-    
+
     .referral-code-content {
         flex-grow: 1;
     }
-    
+
     .referral-code-title {
         margin-top: 0;
         margin-bottom: 10px;
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #1f2937;
     }
-    
-    .referral-code-bonus {
+
+    .referral-code-categories {
         margin-bottom: 10px;
     }
-    
+
+    .referral-code-category {
+        display: inline-block;
+        background-color: #f0f0f0;
+        color: #666;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-right: 5px;
+        margin-bottom: 5px;
+    }
+
+    .referral-code-bonus {
+        margin-bottom: 10px;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    .referral-code-bonus strong {
+        color: #1f2937;
+    }
+
     .referral-code-display {
         margin-bottom: 15px;
         padding: 10px;
         background-color: #f9f9f9;
         border-radius: 3px;
+        font-size: 0.9rem;
+        color: #1f2937;
     }
-    
+
     .referral-code-value {
         font-family: monospace;
         margin-left: 5px;
         font-weight: bold;
     }
-    
+
     .referral-code-action {
         margin-top: 15px;
     }
-    
+
     .referral-code-button {
         display: inline-block;
         padding: 8px 16px;
@@ -372,13 +429,19 @@ function rcp_referral_code_box_shortcode( $atts ) {
         color: #333;
         text-decoration: none;
         border-radius: 3px;
+        font-weight: 500;
+        transition: background-color 0.2s ease;
     }
-    
+
+    .referral-code-button:hover {
+        background-color: #e5e7eb;
+    }
+
     @media (max-width: 768px) {
         .referral-code-box-inner {
             flex-direction: column;
         }
-        
+
         .referral-code-logo {
             margin-right: 0;
             margin-bottom: 15px;
@@ -428,6 +491,7 @@ add_filter( 'archive_template', 'rcp_load_archive_template' );
  * Enqueue frontend scripts and styles.
  */
 function rcp_enqueue_frontend_assets() {
+    // Load main plugin CSS only on plugin pages (single and archive)
     if ( is_singular( 'referral-codes' ) || is_post_type_archive( 'referral-codes' ) ) {
         wp_enqueue_style(
             'referral-code-style',
@@ -435,15 +499,44 @@ function rcp_enqueue_frontend_assets() {
             array(),
             '1.0.1' // Version bump
         );
+    }
 
-        // Enqueue the main script for the frontend
-        wp_enqueue_script(
-            'rcp-frontend-script',
-            plugins_url( 'js/editor.js', __FILE__ ),
+    // Load shortcode CSS when shortcodes are present
+    global $post;
+
+    // Check if any referral code shortcodes are present or if we're on an archive page
+    if ( is_post_type_archive( 'referral-codes' ) ||
+         ( is_a( $post, 'WP_Post' ) && (
+            has_shortcode( $post->post_content, 'referral_code_box' ) ||
+            has_shortcode( $post->post_content, 'referral_code_text' ) ||
+            has_shortcode( $post->post_content, 'referral_code_copy' ) ||
+            has_shortcode( $post->post_content, 'referral_link_text' ) ||
+            has_shortcode( $post->post_content, 'referral_link_copy' ) ||
+            has_shortcode( $post->post_content, 'referral_codes_grid' )
+         ) ) ) {
+        wp_enqueue_style(
+            'referral-code-shortcode-style',
+            plugins_url( 'referral-code-shortcode.css', __FILE__ ),
             array(),
-            filemtime( plugin_dir_path( __FILE__ ) . 'js/editor.js' ),
-            true // Load in footer
+            '1.0.0'
         );
+    }
+
+    // Enqueue archive script for archive pages and pages with grid shortcode
+    if ( is_post_type_archive( 'referral-codes' ) ||
+         ( is_a( $post, 'WP_Post' ) && has_shortcode( $post->post_content, 'referral_codes_grid' ) ) ) {
+
+        wp_enqueue_script(
+            'rcp-archive-script',
+            plugins_url( 'js/archive.js', __FILE__ ),
+            array( 'jquery' ),
+            filemtime( plugin_dir_path( __FILE__ ) . 'js/archive.js' ),
+            true
+        );
+
+        wp_localize_script( 'rcp-archive-script', 'rcp_ajax', array(
+            'ajax_url' => admin_url( 'admin-ajax.php' )
+        ) );
     }
 }
 add_action( 'wp_enqueue_scripts', 'rcp_enqueue_frontend_assets' );
@@ -462,7 +555,7 @@ add_action( 'wp_enqueue_scripts', 'rcp_enqueue_frontend_assets' );
  */
 function rcp_defer_assets( $tag, $handle, $href ) {
     // Defer CSS
-    if ( 'referral-code-style' === $handle ) {
+    if ( 'referral-code-style' === $handle || 'referral-code-shortcode-style' === $handle ) {
         return '<link rel="preload" href="' . esc_url( $href ) . '" as="style" onload="this.onload=null;this.rel=\'stylesheet\'">' .
                '<noscript><link rel="stylesheet" href="' . esc_url( $href ) . '"></noscript>';
     }
@@ -729,4 +822,193 @@ function rcp_enqueue_copy_assets() {
     }
 }
 add_action( 'wp_enqueue_scripts', 'rcp_enqueue_copy_assets' );
+
+/**
+ * Shortcode to display referral codes grid with AJAX load more.
+ *
+ * @param array $atts Shortcode attributes.
+ * @return string HTML output for the referral codes grid.
+ */
+function rcp_referral_codes_grid_shortcode( $atts ) {
+    $atts = shortcode_atts( array(
+        'posts_per_page' => 12,
+        'loadmore' => 'true',
+        'category' => '',
+    ), $atts, 'referral_codes_grid' );
+
+    $paged = (get_query_var('paged')) ? get_query_var('paged') : 1;
+
+    $args = array(
+        'post_type' => 'referral-codes',
+        'post_status' => 'publish',
+        'posts_per_page' => intval($atts['posts_per_page']),
+        'paged' => $paged,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+
+    // Add category filter if specified
+    if (!empty($atts['category'])) {
+        if (is_numeric($atts['category'])) {
+            $args['cat'] = intval($atts['category']);
+        } else {
+            $args['category_name'] = sanitize_text_field($atts['category']);
+        }
+    }
+
+    $query = new WP_Query($args);
+
+    ob_start();
+
+    if ($query->have_posts()) {
+        echo '<div class="bt-referral-grid" data-posts-per-page="' . esc_attr($atts['posts_per_page']) . '" data-loadmore="' . esc_attr($atts['loadmore']) . '" data-category="' . esc_attr($atts['category']) . '">';
+        echo '<div class="bt-referral-grid-container">';
+
+        while ($query->have_posts()) {
+            $query->the_post();
+            rcp_render_referral_card();
+        }
+
+        echo '</div>';
+
+        if ($atts['loadmore'] === 'true' && $query->max_num_pages > 1) {
+            echo '<div class="bt-load-more-container">';
+            echo '<button class="bt-load-more-btn" data-page="1" data-max-pages="' . esc_attr($query->max_num_pages) . '">Load More</button>';
+            echo '<div class="bt-loading-spinner" style="display: none;">Loading...</div>';
+            echo '</div>';
+        }
+
+        echo '</div>';
+    } else {
+        echo '<div class="bt-no-referrals-found">';
+        echo '<p>No referral codes found.</p>';
+        echo '</div>';
+    }
+
+    wp_reset_postdata();
+
+    return ob_get_clean();
+}
+add_shortcode( 'referral_codes_grid', 'rcp_referral_codes_grid_shortcode' );
+
+/**
+ * Render a single referral card.
+ */
+function rcp_render_referral_card() {
+    $referral_code = get_post_meta(get_the_ID(), 'referral_code', true);
+    $referral_link = get_post_meta(get_the_ID(), 'referral_link', true);
+    $signup_bonus = get_post_meta(get_the_ID(), 'signup_bonus', true);
+    $app_name = get_post_meta(get_the_ID(), 'app_name', true);
+
+    if (!$app_name) {
+        $app_name = get_the_title();
+    }
+
+    $app_logo = get_the_post_thumbnail_url(get_the_ID(), 'thumbnail');
+    ?>
+    <article class="bt-referral-card">
+        <?php
+        $categories = get_the_category();
+        if (!empty($categories)) :
+            $first_category = $categories[0];
+            $category_name = $first_category->name;
+            if (strlen($category_name) > 30) {
+                $category_name = substr($category_name, 0, 30) . '...';
+            }
+        ?>
+        <!-- <div class="bt-category-badge">
+            <span class="bt-category"><p echo esc_html($category_name); ?></span>
+        </div> -->
+        <?php endif; ?>
+        <div class="bt-referral-header">
+            <?php if ($app_logo) : ?>
+                <div class="bt-app-logo">
+                    <img src="<?php echo esc_url($app_logo); ?>" alt="<?php echo esc_attr($app_name); ?>" loading="lazy">
+                </div>
+            <?php endif; ?>
+            <div class="bt-app-info">
+                <h3 class="bt-app-name">
+                    <a href="<?php the_permalink(); ?>"><?php echo esc_html($app_name); ?></a>
+                </h3>
+            </div>
+        </div>
+
+        <div class="bt-referral-content">
+            <?php if ($referral_code) : ?>
+                <div class="bt-code-section">
+                    <div class="bt-code-container">
+                        <span class="bt-code-value"><?php echo esc_html($referral_code); ?></span>
+                        <button class="bt-copy-code-btn" onclick="copyReferralCode(this, '<?php echo esc_js($referral_code); ?>')" type="button">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" fill="currentColor"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            <?php endif; ?>
+
+            <div class="bt-referral-actions">
+                <?php if ($referral_link) : ?>
+                    <a href="<?php echo esc_url($referral_link); ?>" class="bt-btn bt-btn-primary" target="_blank" rel="noopener">
+                        <?php echo $signup_bonus ? 'Get ' . esc_html($signup_bonus) : 'Get Deal'; ?>
+                    </a>
+                <?php else : ?>
+                    <a href="<?php the_permalink(); ?>" class="bt-btn bt-btn-secondary">
+                        View Details
+                    </a>
+                <?php endif; ?>
+            </div>
+        </div>
+    </article>
+    <?php
+}
+
+/**
+ * AJAX handler for loading more referral codes.
+ */
+function rcp_load_more_referral_codes() {
+    $page = intval($_POST['page']);
+    $posts_per_page = intval($_POST['posts_per_page']);
+    $category = sanitize_text_field($_POST['category']);
+
+    $args = array(
+        'post_type' => 'referral-codes',
+        'post_status' => 'publish',
+        'posts_per_page' => $posts_per_page,
+        'paged' => $page + 1,
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+
+    // Add category filter if specified
+    if (!empty($category)) {
+        if (is_numeric($category)) {
+            $args['cat'] = intval($category);
+        } else {
+            $args['category_name'] = $category;
+        }
+    }
+
+    $query = new WP_Query($args);
+
+    if ($query->have_posts()) {
+        ob_start();
+        while ($query->have_posts()) {
+            $query->the_post();
+            rcp_render_referral_card();
+        }
+        $html = ob_get_clean();
+
+        wp_send_json_success(array(
+            'html' => $html,
+            'has_more' => ($page + 1) < $query->max_num_pages
+        ));
+    } else {
+        wp_send_json_error('No more posts found');
+    }
+
+    wp_die();
+}
+add_action( 'wp_ajax_load_more_referral_codes', 'rcp_load_more_referral_codes' );
+add_action( 'wp_ajax_nopriv_load_more_referral_codes', 'rcp_load_more_referral_codes' );
 ?>

@@ -121,7 +121,7 @@ $current_year = date('Y');
                                 <?php if ($referral_link): ?>
                                 <tr>
                                     <td>Referral Link</td>
-                                    <td><a href=<?php echo esc_url($referral_link); ?> target="_blank"><?php echo esc_url($referral_link); ?> </a></td>
+                                    <td><a href="<?php echo esc_url($referral_link); ?>" target="_blank">Visit <?php echo esc_html($app_name); ?></a></td>
                                 </tr>
                                 <?php endif; ?>
                                 
@@ -147,7 +147,14 @@ $current_year = date('Y');
                         </table>
                     </section>
                     <?php endif; ?>
-                    
+
+                    <!-- Share Referral Code Section -->
+                    <section class="card-section referral-share-section" style="padding: 16px; margin: 12px 0;">
+                        <h2 class="section-header" style="margin-bottom: 8px; font-size: 1.1rem;">Share Your Referral Code</h2>
+                        <p style="margin: 0 0 12px 0; font-size: 0.85rem;">Have a working referral code for <?php echo esc_html($app_name); ?>? Put your referral code here and share it with others to help the community save money!</p>
+                        <a href="#referral-submit" class="primary-action-btn" onclick="scrollToSection('referral-submit')" style="padding: 8px 16px; font-size: 0.8rem;">Submit Your Code</a>
+                    </section>
+
                     <!-- Content Section -->
                     <section class="card-section entry-content clearfix">
                         <h2 class="section-header">About <?php echo esc_html($app_name); ?> Referral Program</h2>
@@ -157,7 +164,7 @@ $current_year = date('Y');
                     </section>
                     
                     <!-- Enhanced Submit Referral Code Section with Two-Line Layout -->
-                    <section class="card-section">
+                    <section class="card-section" id="referral-submit">
                         <div class="referral-submit-section">
                             <h3>Share Your <?php echo ($referral_code) ? 'Referral Code' : 'Referral Link'; ?> </h3>
                             <p>Help the community by sharing your working <?php echo ($referral_code) ? 'referral code' : 'referral link'; ?></p>
@@ -303,13 +310,13 @@ $current_year = date('Y');
                             if ( ! empty( $rcp_faqs ) ) {
                                 foreach ( $rcp_faqs as $faq ) {
                                     $question = str_replace(
-                                        array( '{{post_title}}', '{{referral_code}}' ),
+                                        array( '{{app_name}}', '{{referral_code}}' ),
                                         array( $app_name, $referral_code ),
                                         $faq['question']
                                     );
                                     $answer = str_replace(
-                                        array( '{{post_title}}', '{{referral_code}}', '{{signup_bonus}}', '{{referral_link}}' ),
-                                        array( $app_name, $referral_code, $signup_bonus, $referral_link ),
+                                        array( '{{app_name}}', '{{referral_code}}', '{{signup_bonus}}', '{{referral_link}}', '{{referral_rewards}}' ),
+                                        array( $app_name, $referral_code, $signup_bonus, $referral_link, $referral_rewards ),
                                         $faq['answer']
                                     );
                                     ?>

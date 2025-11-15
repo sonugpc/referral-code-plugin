@@ -29,11 +29,17 @@
                 className: 'referral-code-meta-fields',
             },
             createElement(
+                'p',
+                { style: { marginBottom: '16px', fontSize: '13px', color: '#666' } },
+                __( 'Main shortcode: [referral_code_box id="123"] | Grid: [referral_codes_grid posts_per_page="12" loadmore="true" category="slug"]', 'referral-code-plugin' )
+            ),
+            createElement(
                 TextControl,
                 {
                     label: __( 'Referral Code', 'referral-code-plugin' ),
                     value: referral_code,
                     onChange: ( value ) => setMetaValue( 'referral_code', value ),
+                    help: __( '[referral_code_text id="123"] or [referral_code_text slug="post-slug"] | [referral_code_copy id="123"] or [referral_code_copy slug="post-slug"]', 'referral-code-plugin' ),
                 }
             ),
             createElement(
@@ -42,6 +48,7 @@
                     label: __( 'Referral Link', 'referral-code-plugin' ),
                     value: referral_link,
                     onChange: ( value ) => setMetaValue( 'referral_link', value ),
+                    help: __( '[referral_link_text id="123"] or [referral_link_text slug="post-slug"] | [referral_link_copy id="123"] or [referral_link_copy slug="post-slug"]', 'referral-code-plugin' ),
                 }
             ),
             createElement(
@@ -50,6 +57,7 @@
                     label: __( 'Sign-up Bonus', 'referral-code-plugin' ),
                     value: signup_bonus,
                     onChange: ( value ) => setMetaValue( 'signup_bonus', value ),
+                    help: __( 'Displayed in referral details table', 'referral-code-plugin' ),
                 }
             ),
             createElement(
@@ -58,6 +66,7 @@
                     label: __( 'Referral Rewards', 'referral-code-plugin' ),
                     value: referral_rewards,
                     onChange: ( value ) => setMetaValue( 'referral_rewards', value ),
+                    help: __( 'Displayed in referral details table', 'referral-code-plugin' ),
                 }
             ),
             createElement(
@@ -66,6 +75,7 @@
                     label: __( 'App Name', 'referral-code-plugin' ),
                     value: app_name,
                     onChange: ( value ) => setMetaValue( 'app_name', value ),
+                    help: __( 'Used in page titles and display text', 'referral-code-plugin' ),
                 }
             )
         );
