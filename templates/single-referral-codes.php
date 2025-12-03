@@ -96,7 +96,7 @@ $current_year = date('Y');
 
         <div class="">
             <!-- Main Content with Sidebar -->
-            <div class="container-with-sidebar">
+            <div class="container">
                 <div class="main-content">
                     
                     <!-- Referral Details Section with Table -->
