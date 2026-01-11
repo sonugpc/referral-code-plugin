@@ -603,6 +603,8 @@ function rcp_get_cached_comments( $post_id ) {
 
 /**
  * Clear the comments cache when a new comment is posted or a comment's status changes.
+ *
+ * @param int $comment_id The ID of the comment.
  */
 function rcp_clear_comments_cache( $comment_id ) {
     $comment = get_comment( $comment_id );
@@ -611,6 +613,7 @@ function rcp_clear_comments_cache( $comment_id ) {
     }
 }
 add_action( 'comment_post', 'rcp_clear_comments_cache' );
+add_action( 'edit_comment', 'rcp_clear_comments_cache' );
 add_action( 'wp_set_comment_status', 'rcp_clear_comments_cache' );
 // Add sidebar registration to functions.php
 function register_referral_sidebar() {

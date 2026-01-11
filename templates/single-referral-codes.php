@@ -23,46 +23,6 @@ $rcp_faqs = get_post_meta( $post->ID, 'rcp_faqs', true );
 $categories = get_the_category();
 $category_name = !empty($categories) ? $categories[0]->name : 'Referral Program';
 $current_year = date('Y');
-
-// Split content into first paragraph and remaining content
-// Get raw content and split before WordPress processing
-global $post;
-$raw_content = $post->post_content;
-$first_paragraph = '';
-$remaining_content = '';
-
-// Try to split at <!--more--> tag first
-if (strpos($raw_content, '<!--more-->') !== false) {
-    $parts = explode('<!--more-->', $raw_content, 2);
-    $first_paragraph = trim($parts[0]);
-    $remaining_content = trim($parts[1]);
-} else {
-    // Split at first paragraph break or line break
-    $paragraphs = preg_split('/\n\s*\n/', $raw_content, 2, PREG_SPLIT_NO_EMPTY);
-
-    if (count($paragraphs) > 1) {
-        $first_paragraph = trim($paragraphs[0]);
-        $remaining_content = trim($paragraphs[1]);
-    } elseif (!empty($raw_content)) {
-        // If no clear breaks, take first 200 characters as intro
-        $first_paragraph = substr($raw_content, 0, 200);
-        $remaining_content = substr($raw_content, 200);
-
-        // Try to break at sentence end
-        if (preg_match('/(.+[.!?])\s+/s', $first_paragraph, $matches)) {
-            $first_paragraph = $matches[1];
-            $remaining_content = substr($raw_content, strlen($first_paragraph));
-        }
-    }
-}
-
-// Apply content filters to each part separately
-if (!empty($first_paragraph)) {
-    $first_paragraph = apply_filters('the_content', $first_paragraph);
-}
-if (!empty($remaining_content)) {
-    $remaining_content = apply_filters('the_content', $remaining_content);
-}
 ?>
 
 <main id="primary" class="site-main referral-template">
@@ -152,81 +112,71 @@ if (!empty($remaining_content)) {
         <div class="">
             <!-- Main Content with Sidebar -->
             <div style="max-width:1200px" class="container">
-            <div class="main-content">
+                <div class="main-content">
+                    
+                    <!-- Referral Details Section with Table -->
+                    <?php if ($referral_code || $referral_link || $signup_bonus): ?>
+                    <section class="card-section referral-details-section" id="referral-details">
+                        <h2 class="section-header"><?php echo esc_html($app_name); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Details'; ?></h2>
+                        <table class="referral-details-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th><?php echo esc_html($app_name); ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if ($referral_code): ?>
+                                <tr>
+                                    <td>Referral Code</td>
+                                    <td><span><?php echo esc_html($referral_code); ?></span></td>
+                                </tr>
+                                <?php endif; ?>
+                                
+                                <?php if ($referral_link): ?>
+                                <tr>
+                                    <td>Referral Link</td>
+                                    <td><a href="<?php echo esc_url($referral_link); ?>" target="_blank">Visit <?php echo esc_html($app_name); ?></a></td>
+                                </tr>
+                                <?php endif; ?>
+                                
+                                <?php if ($signup_bonus): ?>
+                                <tr>
+                                    <td>Signup Bonus</td>
+                                    <td><strong style="color: var(--secondary-color);"><?php echo esc_html($signup_bonus); ?></strong></td>
+                                </tr>
+                                <?php endif; ?>
 
-                <!-- First Paragraph from Content -->
-                <?php if (!empty($first_paragraph)): ?>
-                <section class="card-section first-content-section">
-                    <div class="content-area">
-                        <?php echo apply_filters('the_content', $first_paragraph); ?>
-                    </div>
-                </section>
-                <?php endif; ?>
+                                <?php if ($referral_rewards): ?>
+                                <tr>
+                                    <td>Referral Rewards</td>
+                                    <td><strong style="color: var(--secondary-color);"><?php echo esc_html($referral_rewards); ?></strong></td>
+                                </tr>
+                                <?php endif; ?>
+                                
+                                <tr>
+                                    <td>Last Updated</td>
+                                    <td><?php echo get_the_modified_date('M j, Y'); ?></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <?php endif; ?>
 
-                <!-- Referral Details Section with Table -->
-                <?php if ($referral_code || $referral_link || $signup_bonus): ?>
-                <section class="card-section referral-details-section" id="referral-details">
-                    <h2 class="section-header"><?php echo esc_html($app_name); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Details'; ?></h2>
-                    <table class="referral-details-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th><?php echo esc_html($app_name); ?></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if ($referral_code): ?>
-                            <tr>
-                                <td>Referral Code</td>
-                                <td><span><?php echo esc_html($referral_code); ?></span></td>
-                            </tr>
-                            <?php endif; ?>
+                    <!-- Share Referral Code Section -->
+                    <section class="card-section referral-share-section" style="padding: 16px; margin: 12px 0;">
+                        <h2 class="section-header" style="margin-bottom: 8px; font-size: 1.1rem;">Share Your Referral Code</h2>
+                        <p style="margin: 0 0 12px 0; font-size: 0.85rem;">Have a working referral code for <?php echo esc_html($app_name); ?>? Put your referral code here and share it with others to help the community save money!</p>
+                        <a href="#referral-submit" class="primary-action-btn" onclick="scrollToSection('referral-submit')" style="padding: 8px 16px; font-size: 0.8rem;">Submit Your Code</a>
+                    </section>
 
-                            <?php if ($referral_link): ?>
-                            <tr>
-                                <td>Referral Link</td>
-                                <td><a href="<?php echo esc_url($referral_link); ?>" target="_blank">Visit <?php echo esc_html($app_name); ?></a></td>
-                            </tr>
-                            <?php endif; ?>
-
-                            <?php if ($signup_bonus): ?>
-                            <tr>
-                                <td>Signup Bonus</td>
-                                <td><strong style="color: var(--secondary-color);"><?php echo esc_html($signup_bonus); ?></strong></td>
-                            </tr>
-                            <?php endif; ?>
-
-                            <?php if ($referral_rewards): ?>
-                            <tr>
-                                <td>Referral Rewards</td>
-                                <td><strong style="color: var(--secondary-color);"><?php echo esc_html($referral_rewards); ?></strong></td>
-                            </tr>
-                            <?php endif; ?>
-
-                            <tr>
-                                <td>Last Updated</td>
-                                <td><?php echo get_the_modified_date('M j, Y'); ?></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </section>
-                <?php endif; ?>
-
-                <!-- Remaining Content Section -->
-                <?php if (!empty($remaining_content)): ?>
-                <section class="card-section remaining-content-section">
-                    <div class="content-area">
-                        <?php echo apply_filters('the_content', $remaining_content); ?>
-                    </div>
-                </section>
-                <?php endif; ?>
-
-                <!-- Share Referral Code Section -->
-                <section class="card-section referral-share-section" style="padding: 16px; margin: 12px 0;">
-                    <h2 class="section-header" style="margin-bottom: 8px; font-size: 1.1rem;">Share Your Referral Code</h2>
-                    <p style="margin: 0 0 12px 0; font-size: 0.85rem;">Have a working referral code for <?php echo esc_html($app_name); ?>? Put your referral code here and share it with others to help the community save money!</p>
-                    <a href="#referral-submit" class="primary-action-btn" onclick="scrollToSection('referral-submit')" style="padding: 8px 16px; font-size: 0.8rem;">Submit Your Code</a>
-                </section>
+                    <!-- Content Section -->
+                    <section class="card-section entry-content clearfix">
+                        <h2 class="section-header">About <?php echo esc_html($app_name); ?> Referral Code</h2>
+                        <div class="content-area">
+                            <?php the_content(); ?>
+                        </div>
+                    </section>
                     
                     <!-- Enhanced Submit Referral Code Section with Two-Line Layout -->
                     <section class="card-section" id="referral-submit">
