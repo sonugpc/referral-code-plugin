@@ -6,12 +6,15 @@
 
 get_header(); 
 
-// Get meta fields and current year
-$referral_code = get_post_meta( $post->ID, 'referral_code', true );
-$referral_link = get_post_meta( $post->ID, 'referral_link', true );
-$signup_bonus = get_post_meta( $post->ID, 'signup_bonus', true );
-$referral_rewards = get_post_meta( $post->ID, 'referral_rewards', true );
-$app_name = get_post_meta( $post->ID, 'app_name', true );
+// Get optimized meta fields and current year
+$referral_data = rcp_get_referral_data( $post->ID );
+$referral_code = $referral_data['referral_code'];
+$referral_link = $referral_data['referral_link'];
+$signup_bonus = $referral_data['signup_bonus'];
+$referral_rewards = $referral_data['referral_rewards'];
+$app_name = $referral_data['app_name'];
+$usage_count = $referral_data['usage_count'];
+
 if ( ! $app_name ) {
     $app_name = get_the_title();
 }
@@ -20,6 +23,24 @@ $rcp_faqs = get_post_meta( $post->ID, 'rcp_faqs', true );
 $categories = get_the_category();
 $category_name = !empty($categories) ? $categories[0]->name : 'Referral Program';
 $current_year = date('Y');
+
+// Split content into first paragraph and remaining content
+$content = get_the_content();
+$first_paragraph = '';
+$remaining_content = $content;
+
+// Extract first paragraph (more robust regex)
+if (preg_match('/^(<p[^>]*>.*?<\/p>)/is', $content, $matches)) {
+    $first_paragraph = $matches[1];
+    $remaining_content = preg_replace('/^' . preg_quote($first_paragraph, '/') . '/', '', $content, 1);
+} elseif (!empty($content)) {
+    // Fallback: get first line if no paragraph tags
+    $lines = preg_split('/\r\n|\r|\n/', trim($content), 2);
+    if (!empty($lines[0])) {
+        $first_paragraph = '<p>' . trim($lines[0]) . '</p>';
+        $remaining_content = isset($lines[1]) ? $lines[1] : '';
+    }
+}
 ?>
 
 <main id="primary" class="site-main referral-template">
@@ -72,13 +93,25 @@ $current_year = date('Y');
                                     <span><?php echo esc_html($referral_code); ?></span>
                                     <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($referral_code); ?>', this)" aria-label="Copy referral code"></button>
                                 </div>
+                                <?php if ($usage_count > 0): ?>
+                                <div class="referral-usage-count">
+                                    <span class="usage-icon">👥</span>
+                                    <span class="usage-text"><?php echo rcp_format_usage_count($usage_count); ?> people used this code</span>
+                                </div>
+                                <?php endif; ?>
                             <?php elseif ($referral_link): ?>
                                 <div class="referral-code-display">
                                     <span>Direct Link</span>
                                     <a href="<?php echo esc_url($referral_link); ?>" target="_blank" rel="noopener" class="open-link-btn" aria-label="Open referral link in new tab"></a>
                                 </div>
+                                <?php if ($usage_count > 0): ?>
+                                <div class="referral-usage-count">
+                                    <span class="usage-icon">👥</span>
+                                    <span class="usage-text"><?php echo rcp_format_usage_count($usage_count); ?> people used this link</span>
+                                </div>
+                                <?php endif; ?>
                             <?php endif; ?>
-                            
+
                             <?php if ($referral_link): ?>
                                 <a href="<?php echo esc_url($referral_link); ?>" target="_blank" class="primary-action-btn" rel="noopener">
                                     Visit <?php echo esc_html($app_name); ?>
@@ -96,72 +129,82 @@ $current_year = date('Y');
 
         <div class="">
             <!-- Main Content with Sidebar -->
-            <div class="container">
-                <div class="main-content">
-                    
-                    <!-- Referral Details Section with Table -->
-                    <?php if ($referral_code || $referral_link || $signup_bonus): ?>
-                    <section class="card-section referral-details-section" id="referral-details">
-                        <h2 class="section-header"><?php echo esc_html($app_name); ?> <?php echo ($referral_code) ? 'Referral Details' : 'Referral Link Details'; ?></h2>
-                        <table class="referral-details-table">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th><?php echo esc_html($app_name); ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if ($referral_code): ?>
-                                <tr>
-                                    <td>Referral Code</td>
-                                    <td><span><?php echo esc_html($referral_code); ?></span></td>
-                                </tr>
-                                <?php endif; ?>
-                                
-                                <?php if ($referral_link): ?>
-                                <tr>
-                                    <td>Referral Link</td>
-                                    <td><a href="<?php echo esc_url($referral_link); ?>" target="_blank">Visit <?php echo esc_html($app_name); ?></a></td>
-                                </tr>
-                                <?php endif; ?>
-                                
-                                <?php if ($signup_bonus): ?>
-                                <tr>
-                                    <td>Signup Bonus</td>
-                                    <td><strong style="color: var(--secondary-color);"><?php echo esc_html($signup_bonus); ?></strong></td>
-                                </tr>
-                                <?php endif; ?>
+            <div style="max-width:1200px" class="container">
+            <div class="main-content">
 
-                                <?php if ($referral_rewards): ?>
-                                <tr>
-                                    <td>Referral Rewards</td>
-                                    <td><strong style="color: var(--secondary-color);"><?php echo esc_html($referral_rewards); ?></strong></td>
-                                </tr>
-                                <?php endif; ?>
-                                
-                                <tr>
-                                    <td>Last Updated</td>
-                                    <td><?php echo get_the_modified_date('M j, Y'); ?></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                    <?php endif; ?>
+                <!-- First Paragraph from Content -->
+                <?php if (!empty($first_paragraph)): ?>
+                <section class="card-section first-content-section">
+                    <div class="content-area">
+                        <?php echo apply_filters('the_content', $first_paragraph); ?>
+                    </div>
+                </section>
+                <?php endif; ?>
 
-                    <!-- Share Referral Code Section -->
-                    <section class="card-section referral-share-section" style="padding: 16px; margin: 12px 0;">
-                        <h2 class="section-header" style="margin-bottom: 8px; font-size: 1.1rem;">Share Your Referral Code</h2>
-                        <p style="margin: 0 0 12px 0; font-size: 0.85rem;">Have a working referral code for <?php echo esc_html($app_name); ?>? Put your referral code here and share it with others to help the community save money!</p>
-                        <a href="#referral-submit" class="primary-action-btn" onclick="scrollToSection('referral-submit')" style="padding: 8px 16px; font-size: 0.8rem;">Submit Your Code</a>
-                    </section>
+                <!-- Referral Details Section with Table -->
+                <?php if ($referral_code || $referral_link || $signup_bonus): ?>
+                <section class="card-section referral-details-section" id="referral-details">
+                    <h2 class="section-header"><?php echo esc_html($app_name); ?> <?php echo ($referral_code) ? 'Referral Code' : 'Refer & Earn Details'; ?></h2>
+                    <table class="referral-details-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th><?php echo esc_html($app_name); ?></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if ($referral_code): ?>
+                            <tr>
+                                <td>Referral Code</td>
+                                <td><span><?php echo esc_html($referral_code); ?></span></td>
+                            </tr>
+                            <?php endif; ?>
 
-                    <!-- Content Section -->
-                    <section class="card-section entry-content clearfix">
-                        <h2 class="section-header">About <?php echo esc_html($app_name); ?> Referral Program</h2>
-                        <div class="content-area">
-                            <?php the_content(); ?>
-                        </div>
-                    </section>
+                            <?php if ($referral_link): ?>
+                            <tr>
+                                <td>Referral Link</td>
+                                <td><a href="<?php echo esc_url($referral_link); ?>" target="_blank">Visit <?php echo esc_html($app_name); ?></a></td>
+                            </tr>
+                            <?php endif; ?>
+
+                            <?php if ($signup_bonus): ?>
+                            <tr>
+                                <td>Signup Bonus</td>
+                                <td><strong style="color: var(--secondary-color);"><?php echo esc_html($signup_bonus); ?></strong></td>
+                            </tr>
+                            <?php endif; ?>
+
+                            <?php if ($referral_rewards): ?>
+                            <tr>
+                                <td>Referral Rewards</td>
+                                <td><strong style="color: var(--secondary-color);"><?php echo esc_html($referral_rewards); ?></strong></td>
+                            </tr>
+                            <?php endif; ?>
+
+                            <tr>
+                                <td>Last Updated</td>
+                                <td><?php echo get_the_modified_date('M j, Y'); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+                <?php endif; ?>
+
+                <!-- Remaining Content Section -->
+                <?php if (!empty($remaining_content)): ?>
+                <section class="card-section remaining-content-section">
+                    <div class="content-area">
+                        <?php echo apply_filters('the_content', $remaining_content); ?>
+                    </div>
+                </section>
+                <?php endif; ?>
+
+                <!-- Share Referral Code Section -->
+                <section class="card-section referral-share-section" style="padding: 16px; margin: 12px 0;">
+                    <h2 class="section-header" style="margin-bottom: 8px; font-size: 1.1rem;">Share Your Referral Code</h2>
+                    <p style="margin: 0 0 12px 0; font-size: 0.85rem;">Have a working referral code for <?php echo esc_html($app_name); ?>? Put your referral code here and share it with others to help the community save money!</p>
+                    <a href="#referral-submit" class="primary-action-btn" onclick="scrollToSection('referral-submit')" style="padding: 8px 16px; font-size: 0.8rem;">Submit Your Code</a>
+                </section>
                     
                     <!-- Enhanced Submit Referral Code Section with Two-Line Layout -->
                     <section class="card-section" id="referral-submit">
@@ -238,11 +281,18 @@ $current_year = date('Y');
                                         <div class="user-referral-display">
                                             <?php if ($referral_code): ?>
                                                 <span><strong>Code:</strong> <?php echo esc_html($user_referral_code); ?></span>
-                                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($user_referral_code); ?>', this)" aria-label="Copy user referral code"></button>
+                                                <button class="copy-btn" onclick="copyToClipboard('<?php echo esc_js($user_referral_code); ?>', this)" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>" aria-label="Copy user referral code"></button>
                                             <?php else: ?>
                                                 <span><strong>Link:</strong> <a href="<?php echo esc_url($user_referral_code); ?>" target="_blank" rel="noopener"><?php echo esc_html($user_referral_code); ?></a></span>
-                                                <a href="<?php echo esc_url($user_referral_code); ?>" target="_blank" rel="noopener" class="open-link-btn" aria-label="Open user referral link in new tab"></a>
+                                                <a href="<?php echo esc_url($user_referral_code); ?>" target="_blank" rel="noopener" class="open-link-btn" data-comment-id="<?php echo esc_attr($comment->comment_ID); ?>" aria-label="Open user referral link in new tab"></a>
                                             <?php endif; ?>
+                                        </div>
+                                        <?php
+                                        $user_usage_count = (int) get_comment_meta($comment->comment_ID, 'user_code_usage_count', true);
+                                        ?>
+                                        <div class="user-code-usage-count" style="<?php echo $user_usage_count > 0 ? '' : 'display: none;'; ?>">
+                                            <span class="usage-icon">👥</span>
+                                            <span class="usage-text"><?php echo $user_usage_count > 0 ? rcp_format_usage_count($user_usage_count) . ' people used this code' : '0 people used this code'; ?></span>
                                         </div>
                                         <?php endif; ?>
                                         
@@ -383,121 +433,39 @@ if (isset($_POST['referral_code_submission']) && wp_verify_nonce($_POST['referra
 
 ?>
 
-<script defer>
-// Optimized JavaScript for better performance
-(function() {
-    'use strict';
-    
-    // Copy to clipboard with modern approach
-    window.copyToClipboard = function(text, button) {
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(() => showCopySuccess(button))
-                .catch(() => fallbackCopy(text, button));
-        } else {
-            fallbackCopy(text, button);
-        }
-    };
-    
-    function fallbackCopy(text, button) {
-        const textArea = document.createElement('textarea');
-        textArea.value = text;
-        textArea.style.cssText = 'position:fixed;left:-999999px;top:-999999px';
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        
-        try {
-            document.execCommand('copy');
-            showCopySuccess(button);
-        } catch (err) {
-            console.error('Copy failed:', err);
-        }
-        
-        document.body.removeChild(textArea);
-    }
-    
-    function showCopySuccess(button) {
-        button.classList.add('copied');
-        showToast('Copied to clipboard!', 'success');
-        setTimeout(() => button.classList.remove('copied'), 2000);
-    }
-    
-    // Toast notifications
-    function showToast(message, type = 'info') {
-        const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
-        toast.textContent = message;
-        document.body.appendChild(toast);
-        
-        requestAnimationFrame(() => toast.classList.add('show'));
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => document.body.removeChild(toast), 300);
-        }, 3000);
-    }
-    
-    // Tab switching
-    window.showTab = function(tabId, button) {
-        document.querySelectorAll('.tab-content').forEach(tab => {
-            tab.classList.remove('active');
-        });
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-        
-        document.getElementById(tabId).classList.add('active');
-        button.classList.add('active');
-    };
-    
-    // Smooth scroll
-    window.scrollToSection = function(sectionId) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    };
-    
-    // Form enhancements
-    function initForm() {
-        const form = document.querySelector('.submit-form');
-        if (!form) return;
-        
-        form.addEventListener('submit', function(e) {
-            const submitBtn = form.querySelector('.submit-btn');
-            submitBtn.style.opacity = '0.7';
-            submitBtn.textContent = 'Submitting...';
-            submitBtn.disabled = true;
-            
-            setTimeout(() => {
-                submitBtn.style.opacity = '1';
-                submitBtn.textContent = 'Submit Code';
-                submitBtn.disabled = false;
-            }, 5000);
-        });
-        
-        // Real-time validation
-        form.querySelectorAll('input[required], textarea[required]').forEach(input => {
-            input.addEventListener('blur', function() {
-                this.style.borderColor = !this.value.trim() ? '#ef4444' : 'var(--secondary-color)';
-            });
-            
-            input.addEventListener('input', function() {
-                if (this.style.borderColor === 'rgb(239, 68, 68)') {
-                    this.style.borderColor = 'var(--border-color)';
-                }
-            });
+<script>
+// Simple copy function
+function copyToClipboard(text, button) {
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function() {
+            button.textContent = 'Copied!';
+            setTimeout(function() {
+                button.innerHTML = '📋';
+            }, 2000);
         });
     }
-    
-    // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
-            initForm();
-        });
-    } else {
-        initForm();
+}
+
+// Tab switching
+function showTab(tabId, button) {
+    document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+
+    document.getElementById(tabId).classList.add('active');
+    button.classList.add('active');
+}
+
+// Smooth scroll
+function scrollToSection(sectionId) {
+    const element = document.getElementById(sectionId);
+    if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
-})();
+}
 </script>
 
 <?php get_footer(); ?>

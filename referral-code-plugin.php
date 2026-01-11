@@ -143,6 +143,16 @@ function rcp_register_meta_fields() {
             return current_user_can( 'edit_posts' );
         }
     ) );
+
+    register_post_meta( 'referral-codes', 'referral_code_usage_count', array(
+        'show_in_rest' => true,
+        'single'       => true,
+        'type'         => 'integer',
+        'default'      => 0,
+        'auth_callback' => function() {
+            return current_user_can( 'edit_posts' );
+        }
+    ) );
 }
 add_action( 'init', 'rcp_register_meta_fields' );
 
@@ -211,12 +221,8 @@ function rcp_set_default_faqs_on_new_post( $post_id, $post, $update ) {
 
     $default_faqs = array(
         array(
-            'question' => 'What is the {{app_name}} Referral Program?',
-            'answer'   => 'The referral code for {{app_name}} is <strong>{{referral_code}}</strong>. When you use this code during signup, you will receive a bonus of <strong>{{signup_bonus}}</strong>. Alternatively, you can use the direct referral link: {{referral_link}}.',
-        ),
-        array(
             'question' => 'What is the {{app_name}} Referral Code?',
-            'answer'   => 'The referral code for {{app_name}} is <strong>{{referral_code}}</strong>.',
+            'answer'   => 'The referral code for {{app_name}} is <strong>{{referral_code}}</strong>. When you use this code during signup, you will receive a bonus of <strong>{{signup_bonus}}</strong>. Alternatively, you can use the direct referral link: {{referral_link}}.',
         ),
         array(
             'question' => 'What is the {{app_name}} Referral Link?',
@@ -597,8 +603,6 @@ function rcp_get_cached_comments( $post_id ) {
 
 /**
  * Clear the comments cache when a new comment is posted or a comment's status changes.
- *
- * @param int $comment_id The ID of the comment.
  */
 function rcp_clear_comments_cache( $comment_id ) {
     $comment = get_comment( $comment_id );
@@ -607,7 +611,6 @@ function rcp_clear_comments_cache( $comment_id ) {
     }
 }
 add_action( 'comment_post', 'rcp_clear_comments_cache' );
-add_action( 'edit_comment', 'rcp_clear_comments_cache' );
 add_action( 'wp_set_comment_status', 'rcp_clear_comments_cache' );
 // Add sidebar registration to functions.php
 function register_referral_sidebar() {
@@ -915,10 +918,12 @@ add_shortcode( 'referral_codes_grid', 'rcp_referral_codes_grid_shortcode' );
  * Render a single referral card.
  */
 function rcp_render_referral_card() {
-    $referral_code = get_post_meta(get_the_ID(), 'referral_code', true);
-    $referral_link = get_post_meta(get_the_ID(), 'referral_link', true);
-    $signup_bonus = get_post_meta(get_the_ID(), 'signup_bonus', true);
-    $app_name = get_post_meta(get_the_ID(), 'app_name', true);
+    $referral_data = rcp_get_referral_data(get_the_ID());
+    $referral_code = $referral_data['referral_code'];
+    $referral_link = $referral_data['referral_link'];
+    $signup_bonus = $referral_data['signup_bonus'];
+    $app_name = $referral_data['app_name'];
+    $usage_count = $referral_data['usage_count'];
 
     if (!$app_name) {
         $app_name = get_the_title();
@@ -966,6 +971,12 @@ function rcp_render_referral_card() {
                             </svg>
                         </button>
                     </div>
+                    <?php if ($usage_count > 0): ?>
+                    <div class="bt-usage-count">
+                        <span class="usage-icon">👥</span>
+                        <span class="usage-text"><?php echo rcp_format_usage_count($usage_count); ?> used</span>
+                    </div>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
 
@@ -1033,4 +1044,80 @@ function rcp_load_more_referral_codes() {
 }
 add_action( 'wp_ajax_load_more_referral_codes', 'rcp_load_more_referral_codes' );
 add_action( 'wp_ajax_nopriv_load_more_referral_codes', 'rcp_load_more_referral_codes' );
+
+/**
+ * Track page views for main referral codes.
+ */
+function rcp_track_referral_code_view() {
+    if ( is_singular( 'referral-codes' ) ) {
+        global $post;
+        if ( $post && $post->post_type === 'referral-codes' ) {
+            $current_count = (int) get_post_meta( $post->ID, 'referral_code_usage_count', true );
+            update_post_meta( $post->ID, 'referral_code_usage_count', $current_count + 1 );
+        }
+    }
+}
+add_action( 'wp_head', 'rcp_track_referral_code_view' );
+
+/**
+ * AJAX handler for tracking user-submitted code usage.
+ */
+function rcp_track_user_code_usage() {
+    // Verify nonce for security
+    if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( $_POST['nonce'], 'rcp_track_usage' ) ) {
+        wp_die( 'Security check failed' );
+    }
+
+    $comment_id = intval( $_POST['comment_id'] );
+    if ( $comment_id > 0 ) {
+        $current_count = (int) get_comment_meta( $comment_id, 'user_code_usage_count', true );
+        update_comment_meta( $comment_id, 'user_code_usage_count', $current_count + 1 );
+
+        wp_send_json_success( array(
+            'count' => $current_count + 1
+        ) );
+    }
+
+    wp_die();
+}
+add_action( 'wp_ajax_track_user_code_usage', 'rcp_track_user_code_usage' );
+add_action( 'wp_ajax_nopriv_track_user_code_usage', 'rcp_track_user_code_usage' );
+
+/**
+ * Get optimized referral code data to avoid repeated queries.
+ *
+ * @param int $post_id The post ID.
+ * @return array Cached post meta data.
+ */
+function rcp_get_referral_data( $post_id ) {
+    static $cache = array();
+
+    if ( ! isset( $cache[ $post_id ] ) ) {
+        $cache[ $post_id ] = array(
+            'referral_code' => get_post_meta( $post_id, 'referral_code', true ),
+            'referral_link' => get_post_meta( $post_id, 'referral_link', true ),
+            'signup_bonus' => get_post_meta( $post_id, 'signup_bonus', true ),
+            'referral_rewards' => get_post_meta( $post_id, 'referral_rewards', true ),
+            'app_name' => get_post_meta( $post_id, 'app_name', true ),
+            'usage_count' => (int) get_post_meta( $post_id, 'referral_code_usage_count', true ),
+        );
+    }
+
+    return $cache[ $post_id ];
+}
+
+/**
+ * Format usage count for display.
+ *
+ * @param int $count The usage count.
+ * @return string Formatted count string.
+ */
+function rcp_format_usage_count( $count ) {
+    if ( $count >= 1000000 ) {
+        return number_format( $count / 1000000, 1 ) . 'M';
+    } elseif ( $count >= 1000 ) {
+        return number_format( $count / 1000, 1 ) . 'K';
+    }
+    return number_format( $count );
+}
 ?>

@@ -60,18 +60,28 @@
             navigator.clipboard.writeText(code).then(function() {
                 showToast('Code copied to clipboard!', 'success');
                 animateCopyButton(button);
+                trackMainCodeUsage(button);
             }).catch(function(err) {
                 console.error('Failed to copy: ', err);
                 fallbackCopyTextToClipboard(code);
                 showToast('Code copied to clipboard!', 'success');
                 animateCopyButton(button);
+                trackMainCodeUsage(button);
             });
         } else {
             fallbackCopyTextToClipboard(code);
             showToast('Code copied to clipboard!', 'success');
             animateCopyButton(button);
+            trackMainCodeUsage(button);
         }
     };
+
+    // Track main referral code usage (for archive/grid pages)
+    function trackMainCodeUsage(button) {
+        // This is for main codes in the grid - we don't track individual usage here
+        // as it's already tracked on page view for single posts
+        console.log('Main code copied');
+    }
 
     function fallbackCopyTextToClipboard(text) {
         var textArea = document.createElement("textarea");
