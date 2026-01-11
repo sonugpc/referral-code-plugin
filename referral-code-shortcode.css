@@ -245,6 +245,14 @@
     color: #0f172a;
 }
 
+.bt-code-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: #64748b;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+
 .bt-code-value {
     word-break: break-all;
     flex: 1;

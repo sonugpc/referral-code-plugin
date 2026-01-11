@@ -830,6 +830,26 @@ add_action( 'wp_enqueue_scripts', 'rcp_enqueue_copy_assets' );
  * @return string HTML output for the referral codes grid.
  */
 function rcp_referral_codes_grid_shortcode( $atts ) {
+    // Enqueue required assets for the grid shortcode
+    wp_enqueue_style(
+        'referral-code-shortcode-style',
+        plugins_url( 'referral-code-shortcode.css', __FILE__ ),
+        array(),
+        '1.0.0'
+    );
+
+    wp_enqueue_script(
+        'rcp-archive-script',
+        plugins_url( 'js/archive.js', __FILE__ ),
+        array( 'jquery' ),
+        filemtime( plugin_dir_path( __FILE__ ) . 'js/archive.js' ),
+        true
+    );
+
+    wp_localize_script( 'rcp-archive-script', 'rcp_ajax', array(
+        'ajax_url' => admin_url( 'admin-ajax.php' )
+    ) );
+
     $atts = shortcode_atts( array(
         'posts_per_page' => 12,
         'loadmore' => 'true',
@@ -937,8 +957,9 @@ function rcp_render_referral_card() {
             <?php if ($referral_code) : ?>
                 <div class="bt-code-section">
                     <div class="bt-code-container">
+                        <span class="bt-code-label">Referral Code:</span>
                         <span class="bt-code-value"><?php echo esc_html($referral_code); ?></span>
-                        <button class="bt-copy-code-btn" onclick="copyReferralCode(this, '<?php echo esc_js($referral_code); ?>')" type="button">
+                        <button class="bt-copy-code-btn" onclick="copyReferralCode(this, '<?php echo esc_js($referral_code); ?>')" type="button" aria-label="Copy referral code">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M16 1H4C2.9 1 2 1.9 2 3V17H4V3H16V1ZM19 5H8C6.9 5 6 5.9 6 7V21C6 22.1 6.9 23 8 23H19C20.1 23 21 22.1 21 21V7C21 5.9 20.1 5 19 5ZM19 21H8V7H19V21Z" fill="currentColor"></path>
                             </svg>
