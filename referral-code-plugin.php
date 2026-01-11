@@ -948,7 +948,9 @@ function rcp_render_referral_card() {
             <?php endif; ?>
             <div class="bt-app-info">
                 <h3 class="bt-app-name">
-                    <a href="<?php the_permalink(); ?>"><?php echo esc_html($app_name); ?></a>
+                    <a href="<?php the_permalink(); ?>"><?php echo esc_html($app_name); ?></a> 
+                     <span class="bt-code-label">Referral Code</span>
+
                 </h3>
             </div>
         </div>
@@ -957,7 +959,6 @@ function rcp_render_referral_card() {
             <?php if ($referral_code) : ?>
                 <div class="bt-code-section">
                     <div class="bt-code-container">
-                        <span class="bt-code-label">Referral Code:</span>
                         <span class="bt-code-value"><?php echo esc_html($referral_code); ?></span>
                         <button class="bt-copy-code-btn" onclick="copyReferralCode(this, '<?php echo esc_js($referral_code); ?>')" type="button" aria-label="Copy referral code">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
