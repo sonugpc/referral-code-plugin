@@ -153,6 +153,15 @@ function rcp_register_meta_fields() {
             return current_user_can( 'edit_posts' );
         }
     ) );
+
+    register_post_meta( 'referral-codes', 'short_description', array(
+        'show_in_rest' => true,
+        'single'       => true,
+        'type'         => 'string',
+        'auth_callback' => function() {
+            return current_user_can( 'edit_posts' );
+        }
+    ) );
 }
 add_action( 'init', 'rcp_register_meta_fields' );
 
@@ -172,6 +181,15 @@ add_action( 'enqueue_block_editor_assets', 'rcp_enqueue_block_editor_assets' );
 
 function rcp_add_meta_box() {
     add_meta_box(
+        'rcp_short_description_meta_box',
+        'Short Description',
+        'rcp_short_description_meta_box_callback',
+        'referral-codes',
+        'normal',
+        'high'
+    );
+
+    add_meta_box(
         'rcp_faq_meta_box',
         'FAQs',
         'rcp_faq_meta_box_callback',
@@ -181,6 +199,43 @@ function rcp_add_meta_box() {
     );
 }
 add_action( 'add_meta_boxes', 'rcp_add_meta_box' );
+
+function rcp_short_description_meta_box_callback( $post ) {
+    $short_description = get_post_meta( $post->ID, 'short_description', true );
+    wp_editor( $short_description, 'short_description', array(
+        'textarea_name' => 'short_description',
+        'media_buttons' => true,
+        'tinymce' => array(
+            'toolbar1' => 'formatselect,bold,italic,underline,|,bullist,numlist,|,link,unlink,|,image,|,undo,redo',
+            'toolbar2' => '',
+            'block_formats' => 'Paragraph=p;Heading 1=h1;Heading 2=h2;Heading 3=h3;Heading 4=h4;Heading 5=h5;Heading 6=h6',
+        ),
+        'quicktags' => array('strong', 'em', 'link', 'block', 'del', 'ins', 'img', 'ul', 'ol', 'li', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'code', 'close'),
+        'textarea_rows' => 8,
+    ) );
+}
+
+function rcp_save_short_description_meta_box( $post_id ) {
+    if ( ! isset( $_POST['short_description'] ) ) {
+        return;
+    }
+
+    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
+        return;
+    }
+
+    if ( ! current_user_can( 'edit_post', $post_id ) ) {
+        return;
+    }
+
+    if ( 'referral-codes' !== get_post_type( $post_id ) ) {
+        return;
+    }
+
+    $short_description = wp_kses_post( $_POST['short_description'] );
+    update_post_meta( $post_id, 'short_description', $short_description );
+}
+add_action( 'save_post', 'rcp_save_short_description_meta_box' );
 
 function rcp_faq_meta_box_callback( $post ) {
     ?>

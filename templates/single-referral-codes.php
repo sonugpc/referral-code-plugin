@@ -14,6 +14,7 @@ $signup_bonus = $referral_data['signup_bonus'];
 $referral_rewards = $referral_data['referral_rewards'];
 $app_name = $referral_data['app_name'];
 $usage_count = $referral_data['usage_count'];
+$short_description = get_post_meta( $post->ID, 'short_description', true );
 
 if ( ! $app_name ) {
     $app_name = get_the_title();
@@ -113,7 +114,16 @@ $current_year = date('Y');
             <!-- Main Content with Sidebar -->
             <div style="max-width:1200px" class="container">
                 <div class="main-content">
-                    
+
+                    <!-- Short Description Section -->
+                    <?php if (!empty($short_description)): ?>
+                    <section class="card-section entry-content clearfix short-description-section">
+                        <div class="short-description-content">
+                            <?php echo wp_kses_post($short_description); ?>
+                        </div>
+                    </section>
+                    <?php endif; ?>
+
                     <!-- Referral Details Section with Table -->
                     <?php if ($referral_code || $referral_link || $signup_bonus): ?>
                     <section class="card-section referral-details-section" id="referral-details">
