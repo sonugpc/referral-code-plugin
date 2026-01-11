@@ -25,21 +25,43 @@ $category_name = !empty($categories) ? $categories[0]->name : 'Referral Program'
 $current_year = date('Y');
 
 // Split content into first paragraph and remaining content
-$content = get_the_content();
+// Get raw content and split before WordPress processing
+global $post;
+$raw_content = $post->post_content;
 $first_paragraph = '';
-$remaining_content = $content;
+$remaining_content = '';
 
-// Extract first paragraph (more robust regex)
-if (preg_match('/^(<p[^>]*>.*?<\/p>)/is', $content, $matches)) {
-    $first_paragraph = $matches[1];
-    $remaining_content = preg_replace('/^' . preg_quote($first_paragraph, '/') . '/', '', $content, 1);
-} elseif (!empty($content)) {
-    // Fallback: get first line if no paragraph tags
-    $lines = preg_split('/\r\n|\r|\n/', trim($content), 2);
-    if (!empty($lines[0])) {
-        $first_paragraph = '<p>' . trim($lines[0]) . '</p>';
-        $remaining_content = isset($lines[1]) ? $lines[1] : '';
+// Try to split at <!--more--> tag first
+if (strpos($raw_content, '<!--more-->') !== false) {
+    $parts = explode('<!--more-->', $raw_content, 2);
+    $first_paragraph = trim($parts[0]);
+    $remaining_content = trim($parts[1]);
+} else {
+    // Split at first paragraph break or line break
+    $paragraphs = preg_split('/\n\s*\n/', $raw_content, 2, PREG_SPLIT_NO_EMPTY);
+
+    if (count($paragraphs) > 1) {
+        $first_paragraph = trim($paragraphs[0]);
+        $remaining_content = trim($paragraphs[1]);
+    } elseif (!empty($raw_content)) {
+        // If no clear breaks, take first 200 characters as intro
+        $first_paragraph = substr($raw_content, 0, 200);
+        $remaining_content = substr($raw_content, 200);
+
+        // Try to break at sentence end
+        if (preg_match('/(.+[.!?])\s+/s', $first_paragraph, $matches)) {
+            $first_paragraph = $matches[1];
+            $remaining_content = substr($raw_content, strlen($first_paragraph));
+        }
     }
+}
+
+// Apply content filters to each part separately
+if (!empty($first_paragraph)) {
+    $first_paragraph = apply_filters('the_content', $first_paragraph);
+}
+if (!empty($remaining_content)) {
+    $remaining_content = apply_filters('the_content', $remaining_content);
 }
 ?>
 
